@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
 #define maxWidth 6
 typedef struct matrix{
 	unsigned int len;
@@ -34,6 +33,8 @@ void array_destroy(array* A){
 	free(A->values);
 	free(A->shape);
 }
+
+
 void print(array* A){
  	for(int i=0;i<A->len;i++){
  		for(int j=0;j<A->shape[1];j++){
@@ -43,6 +44,8 @@ void print(array* A){
  		printf("\n");
  	}
  }
+
+
 array* prod(array* A, array*B){
 	assert(A->shape[1]== B->shape[0]);
 	array* C = array_init(A->shape[0],B->shape[1],0);
@@ -51,6 +54,71 @@ array* prod(array* A, array*B){
 			for(int k=0; k<A->shape[1];k++){
 				C->values[i][j]+= A->values[i][k] * B->values[k][j]; 
 			}
+		}
+	}
+	return C;
+}
+
+
+array* sum(array* A, array* B){
+	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+	array* C = array_init(A->shape[0],A->shape[1],0);
+	for(int i=0; i<A->shape[0];i++){
+		for(int j =0;j<B->shape[1];j++){
+			C->values[i][j] = A->values[i][j] + B->values[i][j];
+		}
+	}
+	return C;
+}
+
+array* subtract(array* A, array* B){
+	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+	array* C = array_init(A->shape[0],A->shape[1],0);
+	for(int i=0; i<A->shape[0];i++){
+		for(int j =0;j<B->shape[1];j++){
+			C->values[i][j] = A->values[i][j] - B->values[i][j];
+		}
+	}
+	return C;
+}
+
+array* elementwise_product(array* A, array* B){
+	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+	array* C = array_init(A->shape[0],A->shape[1],0);
+	for(int i=0; i<A->shape[0];i++){
+		for(int j =0;j<B->shape[1];j++){
+			C->values[i][j] = A->values[i][j] * B->values[i][j];
+		}
+	}
+	return C;
+}
+
+array* elementwise_division(array* A, array* B){
+	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+	array* C = array_init(A->shape[0],A->shape[1],0);
+	for(int i=0; i<A->shape[0];i++){
+		for(int j =0;j<B->shape[1];j++){
+			C->values[i][j] = A->values[i][j]/B->values[i][j];
+		}
+	}
+	return C;
+}
+
+array* scalar_sum(array* A, double c){
+	array* C = array_init(A->shape[0],A->shape[1],0);
+	for(int i=0; i<A->shape[0];i++){
+		for(int j =0;j<A->shape[1];j++){
+			C->values[i][j] = A->values[i][j] +c;
+		}
+	}
+	return C;
+}
+
+array* scalar_product(array* A, double c){
+	array* C = array_init(A->shape[0],A->shape[1],0);
+	for(int i=0; i<A->shape[0];i++){
+		for(int j =0;j<A->shape[1];j++){
+			C->values[i][j] = A->values[i][j] * c;
 		}
 	}
 	return C;

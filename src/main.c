@@ -12,11 +12,17 @@ int main(){
 	A->values[1][1] = 10;
 	array* B = array_init(3,6,9);
 	B->values[2][2] = 20;
+	printf("A : \n");
 	print(A);
+	printf("B : \n");
 	print(B);
-	printf("\n");
+	printf("A*B\n");
 	print(prod(A,B));
-	printf("%lf \n",A->values[0][0]);
+	printf("A+1\n");
+	print(sum(A,array_init(4,3,1)));
+	print(scalar_sum(A,1));
+	printf("A * 2\n");
+	print(scalar_product(A,2));
 	array_destroy(A);
 	return 0;
 }
