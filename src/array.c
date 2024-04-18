@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
+#include "mathextra.h"
 #define maxWidth 6
 typedef struct matrix{
 	unsigned int len;
@@ -8,7 +10,7 @@ typedef struct matrix{
 	double **values;
 }array;
 
-array* array_init(int n, int m,double v){
+array* array_init(int n, int m,double c){
 	array* A = malloc(sizeof(array));
 	A-> len = n;
 	A-> shape= malloc(sizeof(int)*2);
@@ -18,13 +20,21 @@ array* array_init(int n, int m,double v){
 	for(int i=0;i<n;i++){
 		A->values[i]=(double*)malloc(sizeof(double)*m);
 		for(int j=0;j<m;j++){
-			A->values[i][j]=v;
+			A->values[i][j]=c;
 		}
 	}
 	return A;
 }
 
+array* vector_col_init(int n, double c){
+	array* V = array_init(n,1,c);
+	return V;
+}
 
+array* vector_row_init(int m, double c){
+	array* V = array_init(1,m,c);
+	return V;
+}
 void array_destroy(array* A){
 	for(int i=0;i<A->shape[0];i++){
 		free(A->values[i]);
@@ -34,7 +44,16 @@ void array_destroy(array* A){
 	free(A->shape);
 }
 
-
+array* transpose(array* A) {
+	assert(A->shape[0]!=0 || A->shape[1]!=0);
+    array* T = array_init(A->shape[1], A->shape[0], 0);
+    for (int i = 0; i < A->shape[0]; i++) {
+        for (int j = 0; j < A->shape[1]; j++) {
+            T->values[j][i] = A->values[i][j];
+        }
+    }
+    return T;
+}
 void print(array* A){
  	for(int i=0;i<A->len;i++){
  		for(int j=0;j<A->shape[1];j++){
@@ -45,6 +64,13 @@ void print(array* A){
  	}
  }
 
+array* eye(int n, int m){
+	array* M = array_init(n, m , 0);
+	for(int i=0;i<(int) min(n,m);i++){
+		M->values[i][i] = 1;
+	}
+	return M;
+}
 
 array* prod(array* A, array*B){
 	assert(A->shape[1]== B->shape[0]);
@@ -104,7 +130,7 @@ array* elementwise_division(array* A, array* B){
 	return C;
 }
 
-array* scalar_sum(array* A, double c){
+array* sumc(array* A, double c){
 	array* C = array_init(A->shape[0],A->shape[1],0);
 	for(int i=0; i<A->shape[0];i++){
 		for(int j =0;j<A->shape[1];j++){
@@ -114,7 +140,7 @@ array* scalar_sum(array* A, double c){
 	return C;
 }
 
-array* scalar_product(array* A, double c){
+array* prodc(array* A, double c){
 	array* C = array_init(A->shape[0],A->shape[1],0);
 	for(int i=0; i<A->shape[0];i++){
 		for(int j =0;j<A->shape[1];j++){
@@ -122,4 +148,17 @@ array* scalar_product(array* A, double c){
 		}
 	}
 	return C;
+}
+
+
+array* dot_product(array* A, array* v) {
+    // Assuming v is a column vector
+    assert(A->shape[1] == v->shape[0]);
+    array* result = array_init(A->shape[0], 1, 0);
+    for (int i = 0; i < A->shape[0]; i++) {
+        for (int j = 0; j < A->shape[1]; j++) {
+            result->values[i][0] += A->values[i][j] * v->values[j][0];
+        }
+    }
+    return result;
 }
