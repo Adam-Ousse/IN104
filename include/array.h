@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <math.h>
 
+#define maxWidth 6
 
 typedef struct matrix {
     unsigned int len;
