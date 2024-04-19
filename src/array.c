@@ -1,14 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include "mathextra.h"
-#define maxWidth 6
-typedef struct matrix{
-	unsigned int len;
-	int* shape;
-	double **values;
-}array;
+#include "utils.h"
+#include "array.h"
+
+
 
 array* array_init(int n, int m,double c){
 	array* A = malloc(sizeof(array));

@@ -1,0 +1,5 @@
+# Ignore Visual Studio Code folders
+.vscode/
+
+# Ignore CLion folders
+.idea/
