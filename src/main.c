@@ -1,7 +1,6 @@
 #include "utils.h"
 #include "array.h"
 
-
 	
 int main(){
 
