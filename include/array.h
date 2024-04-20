@@ -30,4 +30,6 @@ array* prodc(array* A, double c);
  */
 array* dot_product(array* A, array* v) ;
 array* linspace(double start, double stop, int num);
+array* col_subset(array* X, int column);
+void info(array* X);
 #endif /* ARRAY_H */

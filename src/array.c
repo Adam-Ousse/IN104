@@ -178,3 +178,15 @@ array* linspace(double start, double stop, int num){
     }
     return V;
 }
+
+array* col_subset(array* X, int column){
+    array* result = vector_col_init(X->shape[0],0);
+    for(int i=0;i<X->shape[0];i++){
+        result->values[i][0]= X->values[i][column];
+    }
+    return result;
+}
+
+void info(array* X){
+    printf("Shape : (%d, %d)\n",X->shape[0],X->shape[1]);
+}
