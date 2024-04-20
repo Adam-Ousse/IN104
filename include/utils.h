@@ -5,4 +5,6 @@
 #include <assert.h>
 #include <math.h>
 #include "mathextra.h"
+#include <string.h>
+#include <unistd.h>// for getcwd
 #endif

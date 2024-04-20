@@ -10,3 +10,4 @@
 
 # Ignore cmake-build-debug folder
 /cmake-build-debug
+/cmake-build-debug

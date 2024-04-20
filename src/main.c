@@ -1,7 +1,7 @@
 #include "utils.h"
 #include "array.h"
+#include "data.h"
 
-	
 int main(){
 
 	array* A = array_init(4,3,0);
@@ -37,5 +37,12 @@ int main(){
     printf("X : \n");
     print(X);
     array_destroy(X);
+    /*char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    printf("Current working directory: %s\n", cwd);*/
+    printf("data.csv : \n");
+    array* Y =read_file("../data/data.csv",";");
+    print(Y);
+    array_destroy(Y);
 	return 0;
 }
