@@ -7,3 +7,6 @@
 
 #ignore .o in build
 /build/*.o
+
+# Ignore cmake-build-debug folder
+/cmake-build-debug/
