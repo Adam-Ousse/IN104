@@ -27,12 +27,10 @@ all: $(TARGET)
 
 # Link the object files into the final executable
 $(TARGET): $(OBJS)
-	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Compile the source files into object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS)
-	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
 	@echo "build finished"
 # Clean up the build directory

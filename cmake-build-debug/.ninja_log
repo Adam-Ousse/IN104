@@ -1,0 +1,11 @@
+# ninja log v5
+9	50	7353118548553450	CMakeFiles/main.dir/src/mathextra.c.obj	133211942a100a19
+6	84	7353118548882640	CMakeFiles/main.dir/src/array.c.obj	39813c8459bcdf35
+2	62	7353120947752083	CMakeFiles/main.dir/src/main.c.obj	ff4402a8bfeb65fb
+104	206	7353110754402114	main.exe	da72060fcea8bca
+2	69	7353121338751229	/bin/main.exe	cd37c8ed6ef28364
+1	86	7353122583291033	build.ninja	11a3a1a493ab0847
+1	80	7353121680404169	bin/main.exe	a9eee315ce549b14
+62	126	7353120948370699	${CMAKE_BINARY_DIR}/bin/main.exe	c3ccbcabc7b23589
+0	84	7353122583291033	build.ninja	11a3a1a493ab0847
+2	66	7353122584085147	C:/Users/adamg/OneDrive/Documents/GitHub/IN104/bin/main.exe	f5caf6390f830cf7
