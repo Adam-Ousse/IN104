@@ -22,5 +22,12 @@ array* elementwise_product(array* A, array* B);
 array* elementwise_division(array* A, array* B);
 array* sumc(array* A, double c);
 array* prodc(array* A, double c);
+/**
+ *
+ * @param A Matrice
+ * @param v Vecteur colonne
+ * @return Le produit A*v
+ */
 array* dot_product(array* A, array* v) ;
+array* linspace(double start, double stop, int num);
 #endif /* ARRAY_H */

@@ -33,5 +33,9 @@ int main(){
 	array_destroy(B);
 	array_destroy(T);
 	array_destroy(V);
+    array* X = linspace(0,10,100);
+    printf("X : \n");
+    print(X);
+    array_destroy(X);
 	return 0;
 }

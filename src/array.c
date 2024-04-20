@@ -48,13 +48,21 @@ array* transpose(array* A) {
     return T;
 }
 void print(array* A){
- 	for(int i=0;i<A->len;i++){
- 		for(int j=0;j<A->shape[1];j++){
- 			printf("%-*.*lf ", maxWidth, 1, A->values[i][j]);
- 			// printf("%4.2lf ",A->values[i][j]);
- 		}
- 		printf("\n");
- 	}
+    if(A->shape[0]==1){//pour vecteur colonne
+        for(int j=0;j<A->shape[1]-1;j++){
+            printf("%.*lf,",1, A->values[0][j]);
+            // printf("%4.2lf ",A->values[i][j]);
+        }
+        printf("%.*lf\n",1, A->values[0][A->shape[1]-1]);
+    }else {
+        for (int i = 0; i < A->len; i++) {
+            for (int j = 0; j < A->shape[1]; j++) {
+                printf("%-*.*lf ", maxWidth, 1, A->values[i][j]);
+                // printf("%4.2lf ",A->values[i][j]);
+            }
+            printf("\n");
+        }
+    }
  }
 
 array* eye(int n, int m){
@@ -154,4 +162,19 @@ array* dot_product(array* A, array* v) {
         }
     }
     return result;
+}
+/**
+ * Comme np.linspace()
+ * @param start positon initiale
+ * @param stop position finale
+ * @param num nombre de valeurs
+ * @return vecteur ligne contenat des valeurs à distance égale
+ */
+array* linspace(double start, double stop, int num){
+    array* V =vector_row_init(num,start);
+    double c = (stop-start)/num;
+    for(int j=1;j<num;j++){
+        V->values[0][j]+=c*j;
+    }
+    return V;
 }
