@@ -178,3 +178,28 @@ array* linspace(double start, double stop, int num){
     }
     return V;
 }
+
+double mean(array* A){
+    double s=0;
+    int n=A->shape[0];
+    int m=A->shape[1];
+    assert (n*m != 0);
+    for (int i=0; i<n; i++){
+        for (int j=0; j<m; j++){
+            s+=A->values[i][j];
+        }
+    }
+    return s/(n*m);
+}
+
+array* transform(array* A, double (*func)(double)){
+    int n=A->shape[0];
+    int m=A->shape[1];
+    array* B= array_init(n,m,0);
+    for (int i=0; i<n; i++){
+        for (int j=0; j<m; j++){
+            B->values[i][j]=func(A->values[i][j]);
+        }
+    }
+    return B;
+}
