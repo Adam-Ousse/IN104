@@ -1,4 +1,4 @@
 C:\Users\adamg\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/adamg/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_BINARY_DIR}/bin -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_BINARY_DIR}/build -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_BINARY_DIR}/build. -G Ninja -S C:\Users\adamg\OneDrive\Documents\GitHub\IN104 -B C:\Users\adamg\OneDrive\Documents\GitHub\IN104\cmake-build-debug
--- Configuring done (0.0s)
+-- Configuring done (0.2s)
 -- Generating done (0.0s)
 -- Build files have been written to: C:/Users/adamg/OneDrive/Documents/GitHub/IN104/cmake-build-debug

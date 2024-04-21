@@ -63,6 +63,13 @@ build CMakeFiles/main.dir/src/data.c.obj: C_COMPILER__main_unscanned_Debug C$:/U
   OBJECT_DIR = CMakeFiles\main.dir
   OBJECT_FILE_DIR = CMakeFiles\main.dir\src
 
+build CMakeFiles/main.dir/src/linearmodels.c.obj: C_COMPILER__main_unscanned_Debug C$:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/linearmodels.c || cmake_object_order_depends_target_main
+  DEP_FILE = CMakeFiles\main.dir\src\linearmodels.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always
+  INCLUDES = -IC:/Users/adamg/OneDrive/Documents/GitHub/IN104/include
+  OBJECT_DIR = CMakeFiles\main.dir
+  OBJECT_FILE_DIR = CMakeFiles\main.dir\src
+
 build CMakeFiles/main.dir/src/main.c.obj: C_COMPILER__main_unscanned_Debug C$:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/main.c || cmake_object_order_depends_target_main
   DEP_FILE = CMakeFiles\main.dir\src\main.c.obj.d
   FLAGS = -g -std=gnu11 -fdiagnostics-color=always
@@ -85,7 +92,7 @@ build CMakeFiles/main.dir/src/mathextra.c.obj: C_COMPILER__main_unscanned_Debug 
 #############################################
 # Link the executable C:\Users\adamg\OneDrive\Documents\GitHub\IN104\bin\main.exe
 
-build C$:/Users/adamg/OneDrive/Documents/GitHub/IN104/bin/main.exe: C_EXECUTABLE_LINKER__main_Debug CMakeFiles/main.dir/src/array.c.obj CMakeFiles/main.dir/src/data.c.obj CMakeFiles/main.dir/src/main.c.obj CMakeFiles/main.dir/src/mathextra.c.obj
+build C$:/Users/adamg/OneDrive/Documents/GitHub/IN104/bin/main.exe: C_EXECUTABLE_LINKER__main_Debug CMakeFiles/main.dir/src/array.c.obj CMakeFiles/main.dir/src/data.c.obj CMakeFiles/main.dir/src/linearmodels.c.obj CMakeFiles/main.dir/src/main.c.obj CMakeFiles/main.dir/src/mathextra.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\main.dir

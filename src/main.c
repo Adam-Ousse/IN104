@@ -1,10 +1,9 @@
 #include "utils.h"
 #include "array.h"
 #include "data.h"
-
+#include "linearmodels.h"
 int main(){
-
-	array* A = array_init(4,3,0);
+	/*array* A = array_init(4,3,0);
 	A->values[0][0] = 6;
 	A->values[1][2]= 9;
 	A->values[1][1] = 10;
@@ -37,12 +36,25 @@ int main(){
     printf("X : \n");
     print(X);
     array_destroy(X);
-    /*char cwd[1024];
+    *//*char cwd[1024];
     getcwd(cwd, sizeof(cwd));
-    printf("Current working directory: %s\n", cwd);*/
+    printf("Current working directory: %s\n", cwd);*//*
     printf("data.csv : \n");
     array* Y =read_file("../data/data.csv",";");
     print(Y);
-    array_destroy(Y);
+    array_destroy(Y);*/
+    array* Y =subset(read_file("../data/height_weight.csv",","),0,10);
+    printf("Y\n");
+    print(Y);
+    printf("%d lignes and %d colonnes\n",Y->shape[0], Y->shape[1]);
+
+
+    LinearRegression* Model=LinearRegression_init(1);
+//    LinearRegression_fit(Model, col_subset(Y,0,1), col_subset(Y,1,2),1,10000,0.00001 ,false);
+//    printf("%lf MSE ",MSE(LinearRegression_predict(Model, col_subset(Y,0,1)), col_subset(Y,1,2)));
+//    printf("%lf a\n",Model->weights->values[0][0]);
+//    info(Model->weights);
+//    printf("%lf\n",Model->bias);
+
 	return 0;
 }
