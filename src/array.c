@@ -261,6 +261,15 @@ double* normalize(array* X){
     return coef_for_anti_normalize;
 }
 
+void unnormalize(array* X, double* coef){
+    for(int i=0;i<X->shape[0]; i++){
+        for(int j=0;j<X->shape[1]; j++){
+            X->values[i][j] *= (coef[1]-coef[0]);
+            X->values[i][j] += coef[0];
+        }
+    }
+    free(coef);
+}
 double mean(array* A){
     double s=0;
     int n=A->shape[0];
