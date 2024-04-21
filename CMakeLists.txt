@@ -14,6 +14,4 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 # Set the output directory for the build executables
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-add_executable(main ${SOURCES}
-        src/linearmodels.c
-        src/linearmodels.h)
+add_executable(main ${SOURCES})
