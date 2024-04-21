@@ -7,4 +7,5 @@
 #include "mathextra.h"
 #include <string.h>
 #include <unistd.h>// for getcwd
+#include <stdbool.h>
 #endif

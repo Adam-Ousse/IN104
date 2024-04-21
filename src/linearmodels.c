@@ -22,8 +22,8 @@ double MSE (array* predictions, array* target){
     double result=0;
 //    printf("predictions shape[0] : %d shape[1] : %d, targets shape[0] : %d shape[1] : %d\n",predictions->shape[0],predictions->shape[1],target->shape[0],target->shape[1]);
     assert(predictions->shape[0]==target->shape[0] && predictions->shape[1]==1 &&target->shape[1]==1 );
-    for(int j=0;j<predictions->shape[1];j++){
-        result+= (predictions->values[j][0] -target->values[j][0])*(predictions->values[j][0] -target->values[j][0]);
+    for(int i=0;i<predictions->shape[0];i++){
+        result+= (predictions->values[i][0] -target->values[i][0])*(predictions->values[i][0] -target->values[i][0]);
     }
     return  result/predictions->shape[0];
 
@@ -37,29 +37,42 @@ array* LinearRegression_predict(LinearRegression* model, array* inputs) {
     return result;
 }
 
-void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets, double learning_rate, int num_epochs, double precision) {
+void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets, double learning_rate, int num_epochs, double precision,bool debug ) {
     int epochs = 0;
     while(epochs<num_epochs && MSE(LinearRegression_predict(model,inputs),targets)>precision){
         epochs++;
         array* predictions = LinearRegression_predict(model, inputs);
-        /*printf("predictions \n");
-        print(predictions);*/
+        //for loop
+        /*for(int i=0;i<model->weights->shape[0];i++){
+            double gradient =0;
+            for(int j=0;j<inputs->shape[0];j++){
+                double temp = (targets->values[j][0]-predictions->values[j][0])* inputs->values[j][i];
+                gradient= temp;
+            }
+            model->weights->values[i][0] +=learning_rate* gradient;
+        }
+        double bias_gradient = 0;
+        for(int j=0;j<inputs->shape[0];j++){
+            bias_gradient+= (targets->values[j][0]-predictions->values[j][0]);
+        }
+        model->bias += learning_rate* bias_gradient;*/
+
+        //method matricielle
         array* errors = subtract(targets, predictions);
         array* inputs_transpose = transpose(inputs);
-        array* gradient = prod(inputs_transpose, errors);
-        array* gradient_scaled = prodc(gradient,  learning_rate );
-        /*printf("gradient \n");
-        print(gradient_scaled);*/
+        array* gradient = dot_product(inputs_transpose, errors);
+        array* gradient_scaled = prodc(gradient,  2*learning_rate/(errors->shape[0]) );
         array* weights_updated = sum(model->weights, gradient_scaled);
-        double bias_gradient = sumc(errors, 0)->values[0][0] ;
-        model->bias -= learning_rate * bias_gradient;
+        double bias_gradient =2*learning_rate* sum_all(errors)/(errors->shape[0]) ;
+        model->bias -=  bias_gradient;
         array_destroy(model->weights);
         model->weights = weights_updated;
-
-        printf("Epoch %d MSE : %lf \n",epochs , MSE(predictions,targets));
-        printf("weights : ");
-        print(model->weights);
-        printf("bias : %lf",model->bias);
+        if(debug){
+            printf("Epoch %d MSE : %lf \n",epochs , MSE(predictions,targets));
+            printf("weights : ");
+            print(model->weights);
+            printf("bias : %lf",model->bias);
+        }
         array_destroy(predictions);
         array_destroy(errors);
         array_destroy(inputs_transpose);
@@ -67,3 +80,4 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
         array_destroy(gradient_scaled);
     }
 }
+

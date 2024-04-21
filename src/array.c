@@ -48,7 +48,7 @@ array* transpose(array* A) {
     return T;
 }
 void print(array* A){
-    if(A->shape[0]==1){//pour vecteur colonne
+    if(A->shape[0]==1){//pour vecteur ligne
         for(int j=0;j<A->shape[1]-1;j++){
             printf("%.*lf,",1, A->values[0][j]);
             // printf("%4.2lf ",A->values[i][j]);
@@ -76,9 +76,9 @@ array* eye(int n, int m){
 array* prod(array* A, array*B){
 	assert(A->shape[1]== B->shape[0]);
 	array* C = array_init(A->shape[0],B->shape[1],0);
-	for(int i=0; i<A->shape[0];i++){
-		for(int j =0;j<B->shape[1];j++){
-			for(int k=0; k<A->shape[1];k++){
+	for(int i=0; i< A->shape[0];i++){
+		for(int j =0;j< B->shape[1];j++){
+			for(int k=0; k< A->shape[1];k++){
 				C->values[i][j]+= A->values[i][k] * B->values[k][j]; 
 			}
 		}
@@ -179,14 +179,84 @@ array* linspace(double start, double stop, int num){
     return V;
 }
 
-array* col_subset(array* X, int column){
-    array* result = vector_col_init(X->shape[0],0);
+array* col_subset(array* X, int column_1 , int column_2){
+    assert(column_2>column_1);
+    array* result = array_init(X->shape[0],column_2-column_1,0);
+    //loop copy
     for(int i=0;i<X->shape[0];i++){
-        result->values[i][0]= X->values[i][column];
+        for(int j=0;j<column_2-column_1;j++) {
+            result->values[i][j] = X->values[i][j+column_1];
+        }
     }
     return result;
 }
 
+
+array* subset(array* X , int row_1, int row_2){
+    assert(row_1<row_2);
+    array* result = array_init(row_2-row_1,X->shape[1],0);
+    //for loop copy
+    /*for(int i=0;i<row_2-row_1;i++){
+        for(int j=0;j<X->shape[1];j++){
+            result->values[i][j] = X->values[row_1+i][j];
+        }
+    }*/
+    //memory manipulation (tested works)
+    for(int i=0;i<row_2-row_1;i++){
+        result->values[i] = X->values[row_1+i];
+    }
+    return result;
+}
 void info(array* X){
     printf("Shape : (%d, %d)\n",X->shape[0],X->shape[1]);
+}
+
+double sum_all(array* X){
+    double result = 0;
+    for(int i=0;i<X->shape[0];i++){
+        for(int j=0;j<X->shape[1];j++){
+            result+= X->values[i][j];
+        }
+    }
+    return result;
+}
+
+double min_array(array* X){
+    double result=X->values[0][0];
+    for(int i=0;i<X->shape[0];i++){
+        for(int j=0;j<X->shape[1];j++){
+            if(X->values[i][j] <result){
+                result = X->values[i][j];
+            }
+        }
+    }
+    return result;
+}
+
+double max_array(array* X){
+    double result=X->values[0][0];
+    for(int i=0;i<X->shape[0];i++){
+        for(int j=0;j<X->shape[1];j++){
+            if(X->values[i][j] >result){
+                result = X->values[i][j];
+            }
+        }
+    }
+    return result;
+}
+
+double* normalize(array* X){
+    double minn = min_array(X);
+    double maxx = max_array(X);
+
+    double* coef_for_anti_normalize = malloc(sizeof(double)*2);
+    coef_for_anti_normalize[0] = minn;
+    coef_for_anti_normalize[1] = maxx;
+    for(int i=0;i<X->shape[0]; i++){
+        for(int j=0;j<X->shape[1]; j++){
+            X->values[i][j] -= minn;
+            X->values[i][j] /= (maxx-minn);
+        }
+    }
+    return coef_for_anti_normalize;
 }
