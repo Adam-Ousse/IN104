@@ -174,5 +174,10 @@ double mean(array* A);
  * @return Matrice transformée
  */
 array* transform(array* A, double (*func)(double));
-
+/**
+ *
+ * @param X Matrice à dénormaliser
+ * @param coef Coefficients de normalisation
+ */
+void unnormalize(array* X, double* coef);
 #endif /* ARRAY_H */
