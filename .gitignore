@@ -16,3 +16,6 @@ cmake-build-debug/.ninja_log
 cmake-build-debug/CMakeFiles/clion-Debug-log.txt
 cmake-build-debug/CMakeFiles/main.dir/src/main.c.obj
 cmake-build-debug/Testing/Temporary/LastTest.log
+/cmake-build-debug/Testing/Temporary
+/cmake-build-debug/Testing
+/cmake-build-debug
