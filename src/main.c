@@ -47,7 +47,7 @@ int main(){
     printf("Y\n");
     print(Y);
     printf("%d lignes and %d colonnes\n",Y->shape[0], Y->shape[1]);
-
+    printf("%lf moyenne de la derniere colonne \n",mean(col_subset(Y,1,2)));
 
     LinearRegression* Model=LinearRegression_init(1);
 //    LinearRegression_fit(Model, col_subset(Y,0,1), col_subset(Y,1,2),1,10000,0.00001 ,false);

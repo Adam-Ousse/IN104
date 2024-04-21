@@ -160,4 +160,19 @@ double max_array(array* X);
  * @return Matrice normalisée
  */
 double* normalize(array* X);
+/**
+ * Calcule la moyenne de tous les éléments de A
+ * @param A Matrice
+ * @return La moyenne de tous les éléments de A
+ */
+double mean(array* A);
+
+/**
+ * Applique une fonction sur tous les éléments de A
+ * @param A Matrice
+ * @param func Fonction à appliquer
+ * @return Matrice transformée
+ */
+array* transform(array* A, double (*func)(double));
+
 #endif /* ARRAY_H */
