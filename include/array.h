@@ -8,7 +8,7 @@ typedef struct matrix {
     double **values;
 } array;
 /**
- *
+ * Initialiser une matrice
  * @param n nombre de lignes
  * @param m nombre de colonnes
  * @param v valeur à remplir les cases
