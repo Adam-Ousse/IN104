@@ -43,7 +43,7 @@ int main(){
     array* Y =read_file("../data/data.csv",";");
     print(Y);
     array_destroy(Y);*/
-    array* Y = subset(read_file("../data/height_weight.csv",","),0,10000);
+    array* Y = subset(read_file("../data/x_6.9_3.2.txt","\t"),0,18);
     printf("Y\n");
 //    print(Y);
     printf("%d lignes and %d colonnes\n",Y->shape[0], Y->shape[1]);
@@ -52,7 +52,7 @@ int main(){
     LinearRegression* Model=LinearRegression_init(1);
     array* X= col_subset(Y,0,1);
     array* y =col_subset(Y,1,2);
-    LinearRegression_fit(Model, X, y,10000,0.0000000001 ,true, false);
+    LinearRegression_fit(Model, X, y,10000,0.0000000001 ,false, false);
     printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
     printf("a :%lf \n",Model->weights->values[0][0]);
     info(Model->weights);

@@ -40,7 +40,8 @@ array* LinearRegression_predict(LinearRegression* model, array* inputs) {
 void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets, int num_epochs, double precision,bool debug ,bool normalization ) {
     int epochs = 0;
     double* coef_x, *coef_y;
-    double learning_rate = 2/(gershgorin_radius(inputs)-0.05);
+    double learning_rate = 0.2/max(gershgorin_radius(inputs), gershgorin_radius(targets));
+    printf("learning rate : %lf\n",learning_rate);
     if(normalization){
         coef_x = normalize(inputs);
         coef_y = normalize(targets);
@@ -58,16 +59,16 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
         for(int i=0;i<model->weights->shape[0];i++){
             double gradient =0;
             for(int j=0;j<inputs->shape[0];j++){
-                double temp = errors->values[j][0]* inputs->values[j][i];
-                gradient= temp;
+                double temp = (targets->values[j][0]-predictions->values[j][0])* inputs->values[j][i];
+                gradient-= temp;
             }
-            model->weights->values[i][0] +=learning_rate* gradient/(inputs->shape[0]);
+            model->weights->values[i][0] -=2*learning_rate* gradient/(inputs->shape[0]);
         }
         double bias_gradient = 0;
         for(int j=0;j<inputs->shape[0];j++){
-            bias_gradient+= (targets->values[j][0]-predictions->values[j][0]);
+            bias_gradient-=(targets->values[j][0]-predictions->values[j][0]);
         }
-        model->bias += learning_rate* bias_gradient/(inputs->shape[0]);
+        model->bias -= 2*learning_rate* bias_gradient/(inputs->shape[0]);
 
         //method matricielle
 //        array* errors = subtract(targets, predictions);
