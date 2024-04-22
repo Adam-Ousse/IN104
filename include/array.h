@@ -180,4 +180,5 @@ array* transform(array* A, double (*func)(double));
  * @param coef Coefficients de normalisation
  */
 void unnormalize(array* X, double* coef);
+double gershgorin_radius(array* A);
 #endif /* ARRAY_H */

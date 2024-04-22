@@ -37,11 +37,15 @@ array* LinearRegression_predict(LinearRegression* model, array* inputs) {
     return result;
 }
 
-void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets, double learning_rate, int num_epochs, double precision,bool debug ,bool normalization ) {
+void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets, int num_epochs, double precision,bool debug ,bool normalization ) {
     int epochs = 0;
-    double* coef_x;
+    double* coef_x, *coef_y;
+    double learning_rate = 2/(gershgorin_radius(inputs)-0.05);
     if(normalization){
         coef_x = normalize(inputs);
+        coef_y = normalize(targets);
+        printf("min X : %lf , max X : %lf",coef_x[0],coef_x[1]);
+        printf("min Y : %lf , max Y : %lf",coef_y[0],coef_y[1]);
     }
 
 
@@ -54,7 +58,7 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
         for(int i=0;i<model->weights->shape[0];i++){
             double gradient =0;
             for(int j=0;j<inputs->shape[0];j++){
-                double temp = (targets->values[j][0]-predictions->values[j][0])* inputs->values[j][i];
+                double temp = errors->values[j][0]* inputs->values[j][i];
                 gradient= temp;
             }
             model->weights->values[i][0] +=learning_rate* gradient/(inputs->shape[0]);
@@ -79,7 +83,7 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
             printf("Epoch %d MSE : %lf \n",epochs , MSE(predictions,targets));
             printf("weights : ");
             print(model->weights);
-            printf("bias : %lf",model->bias);
+            printf("bias : %lf\n",model->bias);
         }
         array_destroy(predictions);
         array_destroy(errors);
@@ -88,14 +92,18 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
         array_destroy(gradient_scaled);*/
     }
     if(normalization){
-        for(int k =0; k<model->weights->shape[0];k++){
-            model->weights->values[k][0] -= coef_x[0];
-            model->weights->values[k][0] /= (coef_x[1]-coef_x[0]);
+        model->bias *= (coef_y[1]-coef_y[0]);
 
+        for(int k =0; k<model->weights->shape[0];k++){
+            model->weights->values[k][0] *= (coef_y[1]-coef_y[0])/(coef_x[1]-coef_x[0]);
         }
+
 //    model->bias *= (coef_x[1]-coef_x[0]);
 //    model->bias += coef_x[0];
+
         unnormalize(inputs,coef_x);
+        unnormalize(targets,coef_y);
+
     }
 
 

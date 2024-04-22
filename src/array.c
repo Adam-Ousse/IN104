@@ -254,7 +254,7 @@ double* normalize(array* X){
     coef_for_anti_normalize[1] = maxx;
     for(int i=0;i<X->shape[0]; i++){
         for(int j=0;j<X->shape[1]; j++){
-            X->values[i][j] -= minn;
+            /*X->values[i][j] -= minn;*/
             X->values[i][j] /= (maxx-minn);
         }
     }
@@ -265,7 +265,7 @@ void unnormalize(array* X, double* coef){
     for(int i=0;i<X->shape[0]; i++){
         for(int j=0;j<X->shape[1]; j++){
             X->values[i][j] *= (coef[1]-coef[0]);
-            X->values[i][j] += coef[0];
+//            X->values[i][j] += coef[0];
         }
     }
     free(coef);
@@ -293,4 +293,22 @@ array* transform(array* A, double (*func)(double)){
         }
     }
     return B;
+}
+
+double gershgorin_radius(array* A){
+    int n=A->shape[0];
+    int m=A->shape[1];
+    double r=0;
+    for (int i=0; i<n; i++){
+        double s=0;
+        for (int j=0; j<m; j++){
+            if (i!=j){
+                s+=fabs(A->values[i][j]);
+            }
+        }
+        if (s>r){
+            r=s;
+        }
+    }
+    return r;
 }
