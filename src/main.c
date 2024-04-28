@@ -56,7 +56,7 @@ int main(){
     array* Y =read_file("../data/data.csv",";");
     print(Y);
     array_destroy(Y);*/
-    array* Y = subset(read_file("../data/area_price.csv",","),0,1454);
+    array* Y = subset(read_file("../data/x_6.9_3.2.txt","\t"),0,18);
     info(Y);
     //    printf("Y\n");
 //    print(Y);
@@ -68,19 +68,22 @@ int main(){
     array* y =col_subset(Y,1,2);
     array* x = transpose(linspace(min_array(X), max_array(X), 1000));
 
-//    LinearRegression_fit(Model, X, y,100000,0.0000000001 ,false, false);
-//    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
-//    printf("a :%lf \n",Model->weights->values[0][0]);
-//    info(Model->weights);
-//    printf("b :%lf\n",Model->bias);
-    Model->weights= array_init(1,1,5.67314105);
-    Model->bias = 123719.24203732;
+    LinearRegression_fit(Model, X, y,1000,0.0000000001 ,false, false);
+    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
+    printf("a :%lf \n",Model->weights->values[0][0]);
+    info(Model->weights);
+    printf("b :%lf\n",Model->bias);
+// area_price csv : w = 5.67314105, b= 123719.24203732
+// heigh_weight csv : w = 3.08347645, b= -82.57574306
+//    Model->weights= array_init(1,1,3.08347645);
+//    Model->bias = -82.57574306;
     array* y_predictions = LinearRegression_predict(Model, x);
 //
+    info(y_predictions);
     LinearRegression_destroy(Model);
 
 
-    //resets the Rayliblogfile
+//    resets the Rayliblogfile
     FILE *file = fopen("../log/rayliblog.txt", "w");
     Figure* fig =Figureinit();
     if (file != NULL) {
@@ -94,19 +97,49 @@ int main(){
     Image icon = LoadImage("../assets/icon.png");
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
-    SetTargetFPS(60);
+    SetTargetFPS(24);
+//    HideCursor();
     // Main game loop
+    bool isRendered = false;
+    Texture2D texture;
+
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Draw
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawScatterPlot(X, y, fig, 3, GREEN, 100);
-        DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
-        fig->axis_set = false;
+        if (!isRendered) {
+            // Draw
+            BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawScatterPlot(X, y, fig, 3, GREEN, 100);
+            info(y_predictions);
+            DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
+            fig->axis_set = true;
 
-        EndDrawing();
+            // Capture the screen to an image and convert it to a texture
+            Image screenshot = LoadImageFromScreen();
+            texture = LoadTextureFromImage(screenshot);
+            UnloadImage(screenshot);  // Unload the image data
+
+            isRendered = true;
+            EndDrawing();
+        }else{
+            BeginDrawing();
+            fig->axis_set = false;
+            DrawTexture(texture, 0, 0, WHITE);
+            DrawScatterPlot(X, y, fig, 3, GREEN, 100);
+            fig->axis_set = true;
+            DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
+
+            EndDrawing();
+        }
+
+
+        if(GetCharPressed()==(int)'e'){
+            break;
+        }
     }
+
+// Unload the texture
+    UnloadTexture(texture);
     CloseWindow();
     array_destroy(Y);
     array_destroy(X);
