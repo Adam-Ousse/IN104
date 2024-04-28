@@ -209,6 +209,8 @@ array* subset(array* X , int row_1, int row_2){
 }
 void info(array* X){
     printf("Shape : (%d, %d)\n",X->shape[0],X->shape[1]);
+    printf("Max : %.2lf \n", max_array(X));
+    printf("Min : %.2lf \n", min_array(X));
 }
 
 double sum_all(array* X){

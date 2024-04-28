@@ -40,7 +40,7 @@ array* LinearRegression_predict(LinearRegression* model, array* inputs) {
 void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets, int num_epochs, double precision,bool debug ,bool normalization ) {
     int epochs = 0;
     double* coef_x, *coef_y;
-    double learning_rate = 0.2/max(gershgorin_radius(inputs), gershgorin_radius(targets));
+    double learning_rate = 0.001/max(gershgorin_radius(inputs), gershgorin_radius(targets));
     printf("learning rate : %lf\n",learning_rate);
     if(normalization){
         coef_x = normalize(inputs);
