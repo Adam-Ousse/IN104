@@ -42,7 +42,10 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
     double* coef_x, *coef_y;
 //    double learning_rate =2/gershgorin_radius( dot_product(transpose(inputs),inputs));
     double learning_rate = optimal_learning_rate( dot_product(transpose(inputs),inputs));
-    printf("learning rate : %lf\n",learning_rate);
+    if(debug){
+        printf("learning rate : %lf\n",learning_rate);
+    }
+
     if(normalization){
         coef_x = normalize(inputs);
         coef_y = normalize(targets);
@@ -174,6 +177,19 @@ void LinearRegression_fit_stochastic(LinearRegression* model, array* inputs, arr
 //    model->bias *= (coef_x[1]-coef_x[0]);
 //    model->bias += coef_x[0];
     unnormalize(inputs,coef_x);
+
+
+}
+
+
+
+double R2(array* predictions, array* target){
+    double mean_target = mean(target);
+    array* errors = subtract(target, predictions);
+    array* errors_mean = sumc(errors, -mean_target);
+    double ssres = sum_all(elementwise_product(errors,errors));
+    double sstot = sum_all(elementwise_product(errors_mean,errors_mean));
+    return 1 - (ssres/sstot);
 
 
 }

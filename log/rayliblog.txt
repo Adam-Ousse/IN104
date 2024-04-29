@@ -38,7 +38,7 @@ TEXTURE: [ID 2] Texture loaded successfully (128x128 | GRAY_ALPHA | 1 mipmaps)
 FONT: Default font loaded successfully (224 glyphs)
 FILEIO: [../assets/icon.png] File loaded successfully
 IMAGE: Data loaded successfully (512x512 | R8G8B8A8 | 1 mipmaps)
-TIMER: Target time per frame: 41.667 milliseconds
+TIMER: Target time per frame: 83.333 milliseconds
 FILEIO: [../assets/rock.png] File loaded successfully
 IMAGE: Data loaded successfully (488x589 | R8G8B8A8 | 1 mipmaps)
 TEXTURE: [ID 3] Texture loaded successfully (488x589 | R8G8B8A8 | 1 mipmaps)

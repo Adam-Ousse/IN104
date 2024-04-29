@@ -17,6 +17,7 @@ typedef enum GameScreen { INTRO, PLOT, GAME } GameScreen;
 
 
 int main(){
+
 	/*array* A = array_init(4,3,0);
 	A->values[0][0] = 6;
 	A->values[1][2]= 9;
@@ -57,7 +58,7 @@ int main(){
     array* Y =read_file("../data/data.csv",";");
     print(Y);
     array_destroy(Y);*/
-    array* Y = subset(read_file("../data/height_weight.csv",","),0,5000);
+    array* Y = subset(read_file("../data/height_weight.csv",","),500,5000);
     info(Y);
     //    printf("Y\n");
 //    print(Y);
@@ -69,7 +70,7 @@ int main(){
     array* y =col_subset(Y,1,2);
     array* x = transpose(linspace(min_array(X), max_array(X), 1000));
 
-    LinearRegression_fit(Model, X, y,15000,0.0000000001 ,false, false);
+    LinearRegression_fit(Model, X, y,10,0.0000000001 ,false, false);
     printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
     printf("a :%lf \n",Model->weights->values[0][0]);
     info(Model->weights);
@@ -81,7 +82,8 @@ int main(){
     array* y_predictions = LinearRegression_predict(Model, x);
 //
     info(y_predictions);
-    LinearRegression_destroy(Model);
+
+
 
 
 //    resets the Rayliblogfile
@@ -100,7 +102,7 @@ int main(){
     Image icon = LoadImage("../assets/icon.png");
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
-    SetTargetFPS(24);
+    SetTargetFPS(12);
     ToggleFullscreen();
 //    HideCursor();
     // Main game loop
@@ -179,12 +181,14 @@ int main(){
                     isRendered = true;
                     EndDrawing();
                 }else{
+                    LinearRegression_fit(Model, X, y,5,0.0000000001 ,false, false);
+                    y_predictions = LinearRegression_predict(Model, x);
                     BeginDrawing();
                     fig->axis_set = false;
                     DrawTexture(texture, 0, 0, WHITE);
-                    DrawScatterPlot(X, y, fig, 3, GREEN, 100);
+                    DrawScatterPlot(X, y, fig, 3, GREEN, 50);
                     fig->axis_set = true;
-                    DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
+                    DrawLinePlot(x, y_predictions, fig,3, BLUE, 150);
 
                     EndDrawing();
                 }
@@ -197,6 +201,15 @@ int main(){
     }
 
 // Unload the texture
+//    Model->weights= array_init(1,1,3.08347645);
+//    Model->bias = -82.57574306;
+//    LOG_DEBUG("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
+
+//    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
+    printf("a :%lf \n",Model->weights->values[0][0]);
+    info(Model->weights);
+    printf("b :%lf\n",Model->bias);
+    printf("R2 : %lf\n",R2(LinearRegression_predict(Model,X),y));
     UnloadTexture(rockTexture);
     UnloadTexture(paperTexture);
     UnloadTexture(scissorsTexture);
@@ -205,5 +218,6 @@ int main(){
     array_destroy(Y);
     array_destroy(X);
     array_destroy(y);
+    LinearRegression_destroy(Model);
 	return 0;
 }

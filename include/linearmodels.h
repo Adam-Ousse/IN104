@@ -17,6 +17,6 @@ double MSE (array* predictions, array* target);
 array* LinearRegression_predict(LinearRegression* model, array* inputs);
 void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets,int num_epochs, double precision,bool debug ,bool normalization );
 void LinearRegression_fit_stochastic(LinearRegression* model, array* inputs, array* targets, double learning_rate, int num_epochs,int batch_size, double precision,bool debug );
-
+double R2(array* predictions, array* target);
 
 #endif //IN104_LINEARMODELS_H
