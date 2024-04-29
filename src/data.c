@@ -17,10 +17,11 @@ char *strsep(char **stringp, const char *delim) {
 array* read_file(const char* filename,const char* delimiter){
     FILE* file = fopen(filename, "r+");
     if (file == NULL) {
-        printf("Could not open file %s\n", filename);
+        Log(LOG_ERROR, "Could not open file %s", filename);
+//        TraceLog(LOG_ERROR, "Could not open file [%s:%d]", __FILE__, __LINE__);
         return NULL;
     }
-
+    Log(LOG_INFO, "Opened file %s", filename);
     char line[1024];
     int num_lines = 0;
     int max_cols = 0;
@@ -58,5 +59,6 @@ array* read_file(const char* filename,const char* delimiter){
     }
 
     fclose(file);
+    Log(LOG_INFO, "Closing file %s", filename);
     return data;
 }

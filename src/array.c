@@ -336,5 +336,5 @@ double optimal_learning_rate(array* A){
     }
     r = max_array(c)+min_array(c);
     array_destroy(c);
-    return 20/r;
+    return 2000/r;
 }
