@@ -298,7 +298,7 @@ array* transform(array* A, double (*func)(double)){
 }
 
 double gershgorin_radius(array* A){
-    info(A);
+    assert(A->shape[0]==A->shape[1]);
     int n=A->shape[0];
     int m=A->shape[1];
     array* c = array_init(1,n,0);
@@ -316,4 +316,25 @@ double gershgorin_radius(array* A){
     printf("upper bound : %lf\n",r);
     array_destroy(c);
     return r;
+}
+
+double optimal_learning_rate(array* A){
+    assert(A->shape[0]==A->shape[1]);
+    int n=A->shape[0];
+    int m=A->shape[1];
+    array* c = array_init(1,n,0);
+
+    double r=0;
+    for (int i=0; i<n; i++){
+        double s=0;
+        for (int j=0; j<m; j++){
+            if (i!=j){
+                s+=fabs(A->values[i][j]);
+            }
+        }
+        c->values[0][i]=(s+A->values[i][i])/n;
+    }
+    r = max_array(c)+min_array(c);
+    array_destroy(c);
+    return 2/r;
 }

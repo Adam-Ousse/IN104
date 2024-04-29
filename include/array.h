@@ -181,4 +181,5 @@ array* transform(array* A, double (*func)(double));
  */
 void unnormalize(array* X, double* coef);
 double gershgorin_radius(array* A);
+double optimal_learning_rate(array* A);
 #endif /* ARRAY_H */

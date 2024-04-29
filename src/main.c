@@ -13,6 +13,7 @@ void LogCallback(int logType, const char *text, va_list args) {
         fclose(file);
     }
 }
+typedef enum GameScreen { INTRO, PLOT, GAME } GameScreen;
 
 
 int main(){
@@ -56,7 +57,7 @@ int main(){
     array* Y =read_file("../data/data.csv",";");
     print(Y);
     array_destroy(Y);*/
-    array* Y = subset(read_file("../data/x_6.9_3.2.txt","\t"),0,18);
+    array* Y = subset(read_file("../data/height_weight.csv",","),0,5000);
     info(Y);
     //    printf("Y\n");
 //    print(Y);
@@ -68,7 +69,7 @@ int main(){
     array* y =col_subset(Y,1,2);
     array* x = transpose(linspace(min_array(X), max_array(X), 1000));
 
-    LinearRegression_fit(Model, X, y,1000,0.0000000001 ,false, false);
+    LinearRegression_fit(Model, X, y,15000,0.0000000001 ,false, false);
     printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
     printf("a :%lf \n",Model->weights->values[0][0]);
     info(Model->weights);
@@ -89,56 +90,116 @@ int main(){
     if (file != NULL) {
         fclose(file);
     }
-    const int screenWidth = 1200;
-    const int screenHeight = 800;
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
+
 //    SetTraceLogLevel(LOG_WARNING);
     SetTraceLogCallback(LogCallback);
     InitWindow(screenWidth, screenHeight, "IN104");
+
     Image icon = LoadImage("../assets/icon.png");
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
     SetTargetFPS(24);
+    ToggleFullscreen();
 //    HideCursor();
     // Main game loop
     bool isRendered = false;
     Texture2D texture;
+    Texture2D rockTexture = LoadTexture("../assets/rock.png");
+    Texture2D paperTexture = LoadTexture("../assets/paper.png");
+    Texture2D scissorsTexture = LoadTexture("../assets/scissors.png");
+    GameScreen screen = INTRO;
+    Rectangle playButton = { screenWidth/2 - 100, screenHeight/2 - 40, 200, 80 };
+    Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        if (!isRendered) {
-            // Draw
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawScatterPlot(X, y, fig, 3, GREEN, 100);
-            info(y_predictions);
-            DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
-            fig->axis_set = true;
-
-            // Capture the screen to an image and convert it to a texture
-            Image screenshot = LoadImageFromScreen();
-            texture = LoadTextureFromImage(screenshot);
-            UnloadImage(screenshot);  // Unload the image data
-
-            isRendered = true;
-            EndDrawing();
-        }else{
-            BeginDrawing();
-            fig->axis_set = false;
-            DrawTexture(texture, 0, 0, WHITE);
-            DrawScatterPlot(X, y, fig, 3, GREEN, 100);
-            fig->axis_set = true;
-            DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
-
-            EndDrawing();
-        }
-
-
         if(GetCharPressed()==(int)'e'){
             break;
         }
+        switch(screen){
+            case INTRO:
+                BeginDrawing();
+                ClearBackground(RAYWHITE);
+
+                // Draw the button
+                DrawRectangleRec(playButton, GRAY);
+                DrawText("Play", playButton.x + 40, playButton.y + 20, 40, BLACK); // Doubled the size of the text
+
+                DrawRectangleRec(plotButton, GRAY);
+                DrawText("Plot", plotButton.x + 40, plotButton.y + 20, 40, BLACK);
+
+                // Check for button click
+                if (CheckCollisionPointRec(GetMousePosition(), playButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    screen = GAME;
+                }
+                if (CheckCollisionPointRec(GetMousePosition(), plotButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    screen = PLOT;
+                }
+                EndDrawing();
+                break;
+            case GAME:
+                BeginDrawing();
+                ClearBackground(RAYWHITE);
+                float scale = 0.3;
+                Rectangle rockRec = { screenWidth/2 - 200, screenHeight/2 - 200, rockTexture.width*scale, rockTexture.height*scale};
+                Rectangle paperRec = { screenWidth/2, screenHeight/2 - 200, paperTexture.width*scale, paperTexture.height*scale };
+                Rectangle scissorsRec = { screenWidth/2 + 200, screenHeight/2 - 200, scissorsTexture.width*scale, scissorsTexture.height*scale };
+
+                DrawTextureEx(rockTexture, (Vector2){ screenWidth/2 - 200, screenHeight/2 - 200 }, 0.0f, scale, WHITE);
+                DrawTextureEx(paperTexture, (Vector2){ screenWidth/2, screenHeight/2 - 200 }, 0.0f, scale, WHITE);
+                DrawTextureEx(scissorsTexture, (Vector2){ screenWidth/2 + 200, screenHeight/2 - 200 }, 0.0f, scale, WHITE);
+                if (CheckCollisionPointRec(GetMousePosition(), rockRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    printf("Rock\n");
+                }
+                if (CheckCollisionPointRec(GetMousePosition(), paperRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    printf("Paper\n");
+                }
+                if (CheckCollisionPointRec(GetMousePosition(), scissorsRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    printf("Scissors\n");
+                }
+                EndDrawing();
+                break;
+            case PLOT:
+                if (!isRendered) {
+                    // Draw
+                    BeginDrawing();
+                    ClearBackground(RAYWHITE);
+                    DrawScatterPlot(X, y, fig, 3, GREEN, 100);
+                    info(y_predictions);
+                    DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
+                    fig->axis_set = true;
+
+                    // Capture the screen to an image and convert it to a texture
+                    Image screenshot = LoadImageFromScreen();
+                    texture = LoadTextureFromImage(screenshot);
+                    UnloadImage(screenshot);  // Unload the image data
+
+                    isRendered = true;
+                    EndDrawing();
+                }else{
+                    BeginDrawing();
+                    fig->axis_set = false;
+                    DrawTexture(texture, 0, 0, WHITE);
+                    DrawScatterPlot(X, y, fig, 3, GREEN, 100);
+                    fig->axis_set = true;
+                    DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
+
+                    EndDrawing();
+                }
+
+
+
+                break;
+        }
+
     }
 
 // Unload the texture
+    UnloadTexture(rockTexture);
+    UnloadTexture(paperTexture);
+    UnloadTexture(scissorsTexture);
     UnloadTexture(texture);
     CloseWindow();
     array_destroy(Y);
