@@ -2,7 +2,7 @@
 // Created by adamg on 4/20/2024.
 //
 
-#include "linearmodels.h"
+#include "LinearRegression.h"
 
 
 

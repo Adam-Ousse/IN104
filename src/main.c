@@ -1,7 +1,7 @@
 #include "utils.h"
 #include "array.h"
 #include "data.h"
-#include "linearmodels.h"
+#include "LinearRegression.h"
 #include "raylib.h"
 #include "plot.h"
 #define log_to_console false

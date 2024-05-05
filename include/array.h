@@ -2,7 +2,7 @@
 #define ARRAY_H
 #define maxWidth 6
 
-typedef struct matrix {
+typedef struct array {
     unsigned int len;
     int* shape;
     double **values;

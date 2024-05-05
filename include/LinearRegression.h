@@ -2,8 +2,8 @@
 // Created by adamg on 4/20/2024.
 //
 
-#ifndef IN104_LINEARMODELS_H
-#define IN104_LINEARMODELS_H
+#ifndef IN104_LINEARREGRESSION_H
+#define IN104_LINEARREGRESSION_H
 #include "utils.h"
 #include "array.h"
 #include "mathextra.h"
@@ -19,4 +19,4 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
 void LinearRegression_fit_stochastic(LinearRegression* model, array* inputs, array* targets, double learning_rate, int num_epochs,int batch_size, double precision,bool debug );
 double R2(array* predictions, array* target);
 
-#endif //IN104_LINEARMODELS_H
+#endif //IN104_LINEARREGRESSION_H
