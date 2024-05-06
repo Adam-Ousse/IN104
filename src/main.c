@@ -3,8 +3,11 @@
 #include "data.h"
 #include "LinearRegression.h"
 #include "raylib.h"
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 #include "plot.h"
 #define log_to_console false
+
 
 void LogCallback(int logType, const char *text, va_list args) {
     FILE *file = fopen("../log/rayliblog.txt", "a");
@@ -36,8 +39,13 @@ void LogCallback(int logType, const char *text, va_list args) {
 
     }
 }
-typedef enum GameScreen { INTRO, PLOT, GAME } GameScreen;
-
+/*typedef enum GameScreen { INTRO, PLOT, GAME } GameScreen;*/
+typedef enum GameScreen {
+    MAIN_MENU = 0,
+    SCREEN_ONE,
+    SCREEN_TWO,
+    SCREEN_THREE
+} GameScreen;
 
 int main(){
     //    resets the Rayliblogfile
@@ -78,17 +86,17 @@ int main(){
     if (file != NULL) {
         fclose(file);
     }
-    const int screenWidth = 1920;
-    const int screenHeight = 1080;
+    int screenWidth = 960;
+    int screenHeight = 480;
 
-
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT );
     InitWindow(screenWidth, screenHeight, "IN104");
 
     Image icon = LoadImage("../assets/icon.png");
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
     SetTargetFPS(12);
-    ToggleFullscreen();
+
 //    HideCursor();
     // Main game loop
     bool isRendered = false;
@@ -96,11 +104,11 @@ int main(){
     Texture2D rockTexture = LoadTexture("../assets/rock.png");
     Texture2D paperTexture = LoadTexture("../assets/paper.png");
     Texture2D scissorsTexture = LoadTexture("../assets/scissors.png");
-    GameScreen screen = INTRO;
+    GameScreen currentScreen = MAIN_MENU;
     Rectangle playButton = { screenWidth/2 - 100, screenHeight/2 - 40, 200, 80 };
     Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
 
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    /*while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         if(GetCharPressed()==(int)'e'){
             break;
@@ -183,8 +191,65 @@ int main(){
                 break;
         }
 
-    }
+    }*/
+    while (!WindowShouldClose()) {
+        BeginDrawing();
 
+        ClearBackground(RAYWHITE);
+        screenWidth = GetScreenWidth();
+        screenHeight = GetScreenHeight();
+        // Keyboard event for 'b' key
+        if (IsKeyPressed(KEY_B)) currentScreen = MAIN_MENU;
+
+        switch (currentScreen) {
+            case MAIN_MENU: {
+                DrawText("MAIN MENU", 20, 20, 20, LIGHTGRAY);
+
+                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 - 30, 180, 60}, "Plot"))
+                    currentScreen = SCREEN_ONE;
+                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 + 40, 180, 60},
+                              "Linear Regression"))
+                    currentScreen = SCREEN_TWO;
+                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 + 110, 180, 60},
+                              "Neural Network"))
+                    currentScreen = SCREEN_THREE;
+                if (GuiButton((Rectangle) {screenWidth - 120, screenHeight - 60, 100, 40}, "GitHub"))
+//                    SetWindowState(FLAG_WINDOW_UNFOCUSED); // Unfocus the window
+                    OpenURL("https://github.com/dravenstud/IN104");
+//                    SetWindowState(FLAG_FULLSCREEN_MODE); // Set the window back to fullscreen
+
+            }
+                break;
+            case SCREEN_ONE: {
+                DrawText("Plot", 20, 20, 20, LIGHTGRAY);
+
+                if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
+                    currentScreen = MAIN_MENU;
+
+            }
+                break;
+            case SCREEN_TWO: {
+                DrawText("SCREEN TWO", 20, 20, 20, LIGHTGRAY);
+
+                if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
+                    currentScreen = MAIN_MENU;
+
+            }
+                break;
+            case SCREEN_THREE: {
+                DrawText("SCREEN THREE", 20, 20, 20, LIGHTGRAY);
+
+                if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
+                    currentScreen = MAIN_MENU;
+
+            }
+                break;
+            default:
+                break;
+        }
+
+        EndDrawing();
+    }
 // Unload the texture
 //    Model->weights= array_init(1,1,3.08347645);
 //    Model->bias = -82.57574306;
