@@ -7,8 +7,8 @@
 #include "raygui.h"
 #include "plot.h"
 #define log_to_console false
-
-
+#define TEST true
+#include "array_test.h"
 void LogCallback(int logType, const char *text, va_list args) {
     FILE *file = fopen("../log/rayliblog.txt", "a");
     if (file != NULL) {
@@ -53,7 +53,10 @@ int main(){
     SetTraceLogLevel(LOG_INFO);
     SetTraceLogCallback(LogCallback);
     TraceLog(LOG_INFO, "Starting IN104");
-    array* Y = subset(read_file("../data/height_weight.csv",","),500,5000);
+    if(TEST){
+        main_test();
+    }
+    array* Y = subset(read_file("../data/area_price.csv",","),0,1450);
     info(Y);
     //    printf("Y\n");
 //    print(Y);
@@ -65,7 +68,7 @@ int main(){
     array* y =col_subset(Y,1,2);
     array* x = transpose(linspace(min_array(X), max_array(X), 1000));
 
-    LinearRegression_fit(Model, X, y,10,0.0000000001 ,false, false);
+    LinearRegression_fit(Model, X, y,10,0.0000000001 ,false,false);
     printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
     printf("a :%lf \n",Model->weights->values[0][0]);
     info(Model->weights);
@@ -101,9 +104,6 @@ int main(){
     // Main game loop
     bool isRendered = false;
     Texture2D texture;
-    Texture2D rockTexture = LoadTexture("../assets/rock.png");
-    Texture2D paperTexture = LoadTexture("../assets/paper.png");
-    Texture2D scissorsTexture = LoadTexture("../assets/scissors.png");
     GameScreen currentScreen = MAIN_MENU;
     Rectangle playButton = { screenWidth/2 - 100, screenHeight/2 - 40, 200, 80 };
     Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
@@ -192,6 +192,7 @@ int main(){
         }
 
     }*/
+    bool close = false;
     while (!WindowShouldClose()) {
         BeginDrawing();
 
@@ -205,27 +206,43 @@ int main(){
             case MAIN_MENU: {
                 DrawText("MAIN MENU", 20, 20, 20, LIGHTGRAY);
 
-                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 - 30, 180, 60}, "Plot"))
+                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 - 100, 180, 60}, "Plot"))
                     currentScreen = SCREEN_ONE;
-                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 + 40, 180, 60},
+                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 -30, 180, 60},
                               "Linear Regression"))
                     currentScreen = SCREEN_TWO;
-                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 + 110, 180, 60},
+                if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 + 40, 180, 60},
                               "Neural Network"))
                     currentScreen = SCREEN_THREE;
                 if (GuiButton((Rectangle) {screenWidth - 120, screenHeight - 60, 100, 40}, "GitHub"))
 //                    SetWindowState(FLAG_WINDOW_UNFOCUSED); // Unfocus the window
                     OpenURL("https://github.com/dravenstud/IN104");
 //                    SetWindowState(FLAG_FULLSCREEN_MODE); // Set the window back to fullscreen
-
+                if (GuiButton((Rectangle) {screenWidth /2 -90,  screenHeight / 2 + 110, 180, 60}, "Exit")) {
+                    close=true;
+                    break;
+                }
             }
                 break;
             case SCREEN_ONE: {
                 DrawText("Plot", 20, 20, 20, LIGHTGRAY);
+                LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
+                y_predictions = LinearRegression_predict(Model, x);
+
+                fig->axis_set = false;
+                DrawTexture(texture, 0, 0, WHITE);
+                DrawScatterPlot(X, y, fig, 3, GREEN, 50);
+                fig->axis_set = true;
+                DrawLinePlot(x, y_predictions, fig,3, BLUE, 150);
+                char weightText[64];
+                sprintf(weightText, "Model weights: %.2lf * x + %.2lf", Model->weights->values[0][0],Model->bias*10000);
+                DrawText(weightText, 20, 60, 20, LIGHTGRAY);
 
                 if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
                     currentScreen = MAIN_MENU;
-
+                if (GuiButton((Rectangle) {screenWidth / 2 + 60, screenHeight - 80, 120, 60}, "Reset")){
+                    reset(Model);
+                }
             }
                 break;
             case SCREEN_TWO: {
@@ -249,6 +266,9 @@ int main(){
         }
 
         EndDrawing();
+        if(close){
+            break;
+        }
     }
 // Unload the texture
 //    Model->weights= array_init(1,1,3.08347645);
@@ -260,14 +280,13 @@ int main(){
     info(Model->weights);
     printf("b :%lf\n",Model->bias);
     printf("R2 : %lf\n",R2(LinearRegression_predict(Model,X),y));
-    UnloadTexture(rockTexture);
-    UnloadTexture(paperTexture);
-    UnloadTexture(scissorsTexture);
     UnloadTexture(texture);
     CloseWindow();
     array_destroy(Y);
     array_destroy(X);
     array_destroy(y);
+    array_destroy(x);
+    array_destroy(y_predictions);
     LinearRegression_destroy(Model);
 	return 0;
 }

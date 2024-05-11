@@ -1,11 +1,11 @@
-#include "utils.h"
+
 #include "array.h"
 
 
 
 array* array_init(int n, int m,double c){
 	array* A = malloc(sizeof(array));
-	A-> len = n;
+
 	A-> shape= malloc(sizeof(int)*2);
 	A->shape[0]=n;
 	A->shape[1]=m;
@@ -18,7 +18,21 @@ array* array_init(int n, int m,double c){
 	}
 	return A;
 }
+array* array_rand_init(int n, int m){
+    array* A = malloc(sizeof(array));
+    A-> shape= malloc(sizeof(int)*2);
+    A->shape[0]=n;
+    A->shape[1]=m;
+    A-> values = (double**)malloc(sizeof(double*)*n);
+    for(int i=0;i<n;i++){
+        A->values[i]=(double*)malloc(sizeof(double)*m);
+        for(int j=0;j<m;j++){
+            A->values[i][j]=rand()%10000;
+        }
 
+        }
+    return A;
+}
 array* vector_col_init(int n, double c){
 	array* V = array_init(n,1,c);
 	return V;
@@ -55,7 +69,7 @@ void print(array* A){
         }
         printf("%.*lf\n",1, A->values[0][A->shape[1]-1]);
     }else {
-        for (int i = 0; i < A->len; i++) {
+        for (int i = 0; i < A->shape[0]; i++) {
             for (int j = 0; j < A->shape[1]; j++) {
                 printf("%-*.*lf ", maxWidth, 1, A->values[i][j]);
                 // printf("%4.2lf ",A->values[i][j]);
@@ -74,6 +88,7 @@ array* eye(int n, int m){
 }
 
 array* prod(array* A, array*B){
+
 	assert(A->shape[1]== B->shape[0]);
 	array* C = array_init(A->shape[0],B->shape[1],0);
 	for(int i=0; i< A->shape[0];i++){
@@ -88,7 +103,7 @@ array* prod(array* A, array*B){
 
 
 array* sum(array* A, array* B){
-	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+    assert(same_size(A,B));
 	array* C = array_init(A->shape[0],A->shape[1],0);
 	for(int i=0; i<A->shape[0];i++){
 		for(int j =0;j<B->shape[1];j++){
@@ -99,7 +114,7 @@ array* sum(array* A, array* B){
 }
 
 array* subtract(array* A, array* B){
-	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+    assert(same_size(A,B));
 	array* C = array_init(A->shape[0],A->shape[1],0);
 	for(int i=0; i<A->shape[0];i++){
 		for(int j =0;j<B->shape[1];j++){
@@ -110,7 +125,7 @@ array* subtract(array* A, array* B){
 }
 
 array* elementwise_product(array* A, array* B){
-	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+	assert(same_size(A,B));
 	array* C = array_init(A->shape[0],A->shape[1],0);
 	for(int i=0; i<A->shape[0];i++){
 		for(int j =0;j<B->shape[1];j++){
@@ -121,7 +136,7 @@ array* elementwise_product(array* A, array* B){
 }
 
 array* elementwise_division(array* A, array* B){
-	assert(A->shape[0] == B->shape[0] && A->shape[1] == B->shape[1]);
+    assert(same_size(A,B));
 	array* C = array_init(A->shape[0],A->shape[1],0);
 	for(int i=0; i<A->shape[0];i++){
 		for(int j =0;j<B->shape[1];j++){
@@ -154,7 +169,7 @@ array* prodc(array* A, double c){
 
 array* dot_product(array* A, array* v) {
     // Assuming v is a column vector
-    assert(A->shape[1] == v->shape[0]);
+    assert(A->shape[1] == v->shape[0] && v->shape[1] == 1);
     array* result = array_init(A->shape[0], 1, 0);
     for (int i = 0; i < A->shape[0]; i++) {
         for (int j = 0; j < A->shape[1]; j++) {
@@ -247,30 +262,55 @@ double max_array(array* X){
     return result;
 }
 
-double* normalize(array* X){
+double* mean_normalize(array* X){
     double minn = min_array(X);
     double maxx = max_array(X);
-
+    double meann = mean(X);
+    double* coef_for_anti_normalize = malloc(sizeof(double)*3);
+    coef_for_anti_normalize[0] = meann;
+    coef_for_anti_normalize[1] = minn;
+    coef_for_anti_normalize[2] = maxx;
+    for(int i=0;i<X->shape[0]; i++){
+        for(int j=0;j<X->shape[1]; j++){
+            /*X->values[i][j] -= minn;*/
+            X->values[i][j] -= meann;
+            X->values[i][j] /= (maxx-minn);
+        }
+    }
+    return coef_for_anti_normalize;
+}
+double* min_max_normalize(array* X){
+    double minn = min_array(X);
+    double maxx = max_array(X);
     double* coef_for_anti_normalize = malloc(sizeof(double)*2);
     coef_for_anti_normalize[0] = minn;
     coef_for_anti_normalize[1] = maxx;
     for(int i=0;i<X->shape[0]; i++){
         for(int j=0;j<X->shape[1]; j++){
             /*X->values[i][j] -= minn;*/
+            X->values[i][j] -= minn;
             X->values[i][j] /= (maxx-minn);
         }
     }
     return coef_for_anti_normalize;
 }
-
-void unnormalize(array* X, double* coef){
+void min_max_unnormalize(array* X, double* coef){
     for(int i=0;i<X->shape[0]; i++){
         for(int j=0;j<X->shape[1]; j++){
             X->values[i][j] *= (coef[1]-coef[0]);
+            X->values[i][j]+=coef[0];
 //            X->values[i][j] += coef[0];
         }
     }
-    free(coef);
+}
+void mean_unnormalize(array* X, double* coef){
+    for(int i=0;i<X->shape[0]; i++){
+        for(int j=0;j<X->shape[1]; j++){
+            X->values[i][j] *= (coef[2]-coef[1]);
+            X->values[i][j]+=coef[0];
+//            X->values[i][j] += coef[0];
+        }
+    }
 }
 double mean(array* A){
     double s=0;
@@ -334,7 +374,21 @@ double optimal_learning_rate(array* A){
         }
         c->values[0][i]=(s+A->values[i][i])/n;
     }
-    r = max_array(c)+min_array(c);
+    r = max_array(c)+min_array(c)/2.0;
     array_destroy(c);
     return 2000/r;
+}
+bool same_size(array* A, array* B){
+    return A->shape[0]==B->shape[0] && A->shape[1]==B->shape[1];
+}
+bool equal(array* A, array* B){
+    assert(same_size(A,B));
+    for (int i=0; i<A->shape[0]; i++){
+        for (int j=0; j<A->shape[1]; j++){
+            if (A->values[i][j]!=B->values[i][j]){
+                return false;
+            }
+        }
+    }
+    return true;
 }

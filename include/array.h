@@ -1,9 +1,8 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 #define maxWidth 6
-
+#include "utils.h"
 typedef struct array {
-    unsigned int len;
     int* shape;
     double **values;
 } array;
@@ -15,6 +14,7 @@ typedef struct array {
  * @return Une matrice/vecteur de taille n*m remplie de v
  */
 array* array_init(int n, int m, double v);
+array* array_rand_init(int n, int m);
 /**
  *
  * @param n nombre de lignes
@@ -157,9 +157,12 @@ double max_array(array* X);
 /**
  *
  * @param X Matrice à normaliser
- * @return Matrice normalisée
+ * @return Matrice normalisée (min-max)
  */
-double* normalize(array* X);
+double* min_max_normalize(array* X);
+void min_max_unnormalize(array* X, double* coef);
+double* mean_normalize(array* X);
+void min_max_unnormalize(array* X, double* coef);
 /**
  * Calcule la moyenne de tous les éléments de A
  * @param A Matrice
@@ -179,7 +182,10 @@ array* transform(array* A, double (*func)(double));
  * @param X Matrice à dénormaliser
  * @param coef Coefficients de normalisation
  */
-void unnormalize(array* X, double* coef);
+
 double gershgorin_radius(array* A);
 double optimal_learning_rate(array* A);
+bool same_size(array* A, array* B);
+bool equal(array* A, array* B);
+
 #endif /* ARRAY_H */
