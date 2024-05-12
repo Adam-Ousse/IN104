@@ -9,6 +9,7 @@
 #define log_to_console false
 #define TEST true
 #include "array_test.h"
+#include "metrics.h"
 void LogCallback(int logType, const char *text, va_list args) {
     FILE *file = fopen("../log/rayliblog.txt", "a");
     if (file != NULL) {
@@ -58,10 +59,6 @@ int main(){
     }
     array* Y = subset(read_file("../data/area_price.csv",","),0,1450);
     info(Y);
-    //    printf("Y\n");
-//    print(Y);
-//    printf("%d lignes and %d colonnes\n",Y->shape[0], Y->shape[1]);
-//    printf("%lf moyenne de la derniere colonne \n",mean(col_subset(Y,1,2)));
 
     LinearRegression* Model=LinearRegression_init(1);
     array* X= col_subset(Y,0,1);
@@ -84,7 +81,11 @@ int main(){
 
 
 
-
+    Color my_red = CLITERAL(Color){ 243,102,102,255 };
+    Color my_hover_red = CLITERAL(Color){ 252, 124, 143,255};
+    Color my_grey = CLITERAL(Color){ 89,98,111,255};
+    Color my_bleu = CLITERAL(Color){ 102, 175, 243,255};
+    Color my_hover_bleu = CLITERAL(Color){ 118, 202, 245,255};
     Figure* fig =Figureinit();
     if (file != NULL) {
         fclose(file);
@@ -94,104 +95,21 @@ int main(){
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT );
     InitWindow(screenWidth, screenHeight, "IN104");
-
+    Font globalFont = LoadFont("../assets/Roboto-Medium.ttf");
+    GuiSetFont(globalFont);
     Image icon = LoadImage("../assets/icon.png");
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
-    SetTargetFPS(12);
+    SetTargetFPS(20);
 
-//    HideCursor();
+
     // Main game loop
     bool isRendered = false;
     Texture2D texture;
     GameScreen currentScreen = MAIN_MENU;
     Rectangle playButton = { screenWidth/2 - 100, screenHeight/2 - 40, 200, 80 };
     Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
-
-    /*while (!WindowShouldClose())    // Detect window close button or ESC key
-    {
-        if(GetCharPressed()==(int)'e'){
-            break;
-        }
-        switch(screen){
-            case INTRO:
-                BeginDrawing();
-                ClearBackground(RAYWHITE);
-
-                // Draw the button
-                DrawRectangleRec(playButton, GRAY);
-                DrawText("Play", playButton.x + 40, playButton.y + 20, 40, BLACK); // Doubled the size of the text
-
-                DrawRectangleRec(plotButton, GRAY);
-                DrawText("Plot", plotButton.x + 40, plotButton.y + 20, 40, BLACK);
-
-                // Check for button click
-                if (CheckCollisionPointRec(GetMousePosition(), playButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    screen = GAME;
-                }
-                if (CheckCollisionPointRec(GetMousePosition(), plotButton) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    screen = PLOT;
-                }
-                EndDrawing();
-                break;
-            case GAME:
-                BeginDrawing();
-                ClearBackground(RAYWHITE);
-                float scale = 0.3;
-                Rectangle rockRec = { screenWidth/2 - 200, screenHeight/2 - 200, rockTexture.width*scale, rockTexture.height*scale};
-                Rectangle paperRec = { screenWidth/2, screenHeight/2 - 200, paperTexture.width*scale, paperTexture.height*scale };
-                Rectangle scissorsRec = { screenWidth/2 + 200, screenHeight/2 - 200, scissorsTexture.width*scale, scissorsTexture.height*scale };
-
-                DrawTextureEx(rockTexture, (Vector2){ screenWidth/2 - 200, screenHeight/2 - 200 }, 0.0f, scale, WHITE);
-                DrawTextureEx(paperTexture, (Vector2){ screenWidth/2, screenHeight/2 - 200 }, 0.0f, scale, WHITE);
-                DrawTextureEx(scissorsTexture, (Vector2){ screenWidth/2 + 200, screenHeight/2 - 200 }, 0.0f, scale, WHITE);
-                if (CheckCollisionPointRec(GetMousePosition(), rockRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    printf("Rock\n");
-                }
-                if (CheckCollisionPointRec(GetMousePosition(), paperRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    printf("Paper\n");
-                }
-                if (CheckCollisionPointRec(GetMousePosition(), scissorsRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    printf("Scissors\n");
-                }
-                EndDrawing();
-                break;
-            case PLOT:
-                if (!isRendered) {
-                    // Draw
-                    BeginDrawing();
-                    ClearBackground(RAYWHITE);
-                    DrawScatterPlot(X, y, fig, 3, GREEN, 100);
-                    info(y_predictions);
-                    DrawLinePlot(x, y_predictions, fig,3, BLUE, 100);
-                    fig->axis_set = true;
-
-                    // Capture the screen to an image and convert it to a texture
-                    Image screenshot = LoadImageFromScreen();
-                    texture = LoadTextureFromImage(screenshot);
-                    UnloadImage(screenshot);  // Unload the image data
-
-                    isRendered = true;
-                    EndDrawing();
-                }else{
-                    LinearRegression_fit(Model, X, y,5,0.0000000001 ,false, false);
-                    y_predictions = LinearRegression_predict(Model, x);
-                    BeginDrawing();
-                    fig->axis_set = false;
-                    DrawTexture(texture, 0, 0, WHITE);
-                    DrawScatterPlot(X, y, fig, 3, GREEN, 50);
-                    fig->axis_set = true;
-                    DrawLinePlot(x, y_predictions, fig,3, BLUE, 150);
-
-                    EndDrawing();
-                }
-
-
-
-                break;
-        }
-
-    }*/
+    bool SCREEN_ONE_isPaused = false;
     bool close = false;
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -204,8 +122,15 @@ int main(){
 
         switch (currentScreen) {
             case MAIN_MENU: {
-                DrawText("MAIN MENU", 20, 20, 20, LIGHTGRAY);
-
+                GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(my_bleu));
+                GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(my_hover_bleu)); // Color when hovered
+                GuiSetStyle(BUTTON, BASE_COLOR_PRESSED, ColorToInt(my_hover_bleu)); // Color when pressed
+                GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
+                GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(WHITE));
+                GuiSetStyle(BUTTON, TEXT_COLOR_PRESSED, ColorToInt(WHITE));
+                GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(my_bleu));
+                //                DrawText("MAIN MENU", 20, 20, 20, LIGHTGRAY);
+                DrawTextEx(globalFont, "Projet IN104", (Vector2) {20, 20}, globalFont.baseSize, 0,my_grey);
                 if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 - 100, 180, 60}, "Plot"))
                     currentScreen = SCREEN_ONE;
                 if (GuiButton((Rectangle) {screenWidth / 2 - 90, screenHeight / 2 -30, 180, 60},
@@ -218,6 +143,14 @@ int main(){
 //                    SetWindowState(FLAG_WINDOW_UNFOCUSED); // Unfocus the window
                     OpenURL("https://github.com/dravenstud/IN104");
 //                    SetWindowState(FLAG_FULLSCREEN_MODE); // Set the window back to fullscreen
+                GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(my_red));
+                GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(my_hover_red)); // Color when hovered
+                GuiSetStyle(BUTTON, BASE_COLOR_PRESSED, ColorToInt(my_hover_red)); // Color when pressed
+                GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
+                GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(WHITE));
+                GuiSetStyle(BUTTON, TEXT_COLOR_PRESSED, ColorToInt(WHITE));
+                GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(my_red));
+
                 if (GuiButton((Rectangle) {screenWidth /2 -90,  screenHeight / 2 + 110, 180, 60}, "Exit")) {
                     close=true;
                     break;
@@ -226,7 +159,11 @@ int main(){
                 break;
             case SCREEN_ONE: {
                 DrawText("Plot", 20, 20, 20, LIGHTGRAY);
-                LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
+                if(!SCREEN_ONE_isPaused){
+                    LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
+                }
+                array_destroy(y_predictions);
+
                 y_predictions = LinearRegression_predict(Model, x);
 
                 fig->axis_set = false;
@@ -242,6 +179,12 @@ int main(){
                     currentScreen = MAIN_MENU;
                 if (GuiButton((Rectangle) {screenWidth / 2 + 60, screenHeight - 80, 120, 60}, "Reset")){
                     reset(Model);
+                }
+                if (GuiButton((Rectangle) {screenWidth / 2 + 180, screenHeight - 80, 120, 60}, "Stop")){
+                    SCREEN_ONE_isPaused=true;
+                }
+                if (GuiButton((Rectangle) {screenWidth / 2 + 300, screenHeight - 80, 120, 60}, "Resume")){
+                    SCREEN_ONE_isPaused=false;
                 }
             }
                 break;
@@ -270,17 +213,13 @@ int main(){
             break;
         }
     }
-// Unload the texture
-//    Model->weights= array_init(1,1,3.08347645);
-//    Model->bias = -82.57574306;
-//    LOG_DEBUG("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
 
-//    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
     printf("a :%lf \n",Model->weights->values[0][0]);
     info(Model->weights);
     printf("b :%lf\n",Model->bias);
     printf("R2 : %lf\n",R2(LinearRegression_predict(Model,X),y));
     UnloadTexture(texture);
+    UnloadFont(globalFont);
     CloseWindow();
     array_destroy(Y);
     array_destroy(X);
