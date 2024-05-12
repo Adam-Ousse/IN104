@@ -154,7 +154,7 @@ int main(){
             }
                 break;
             case SCREEN_ONE: {
-                DrawText("Plot", screenWidth/2, 20, 20, LIGHTGRAY);
+                DrawText("Plot", screenWidth/2, 20, 20, my_grey);
                 if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
                     currentScreen = MAIN_MENU;
                 fig_screen_two->axis_set = false;
@@ -188,7 +188,7 @@ int main(){
             }
                 break;
             case SCREEN_TWO: {
-                DrawText("Linear Regression", 20, 20, 20, my_grey);
+                DrawText("Linear Regression", screenWidth/2, 20, 20, my_grey);
                 if(!SCREEN_TWO_isPaused){
                     LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
                 }
@@ -202,7 +202,12 @@ int main(){
                 fig_screen_two->axis_set = true;
                 DrawLinePlot(X, y_predictions, fig_screen_two, 3, my_red, 150);
                 char weightText[64];
-                sprintf(weightText, "MSE: %.2lf", MSE(y_predictions, y));
+                double mse_value = MSE(y_predictions, y);
+                if (mse_value > 10000) {
+                    sprintf(weightText, "MSE: %.2e", mse_value);
+                } else {
+                    sprintf(weightText, "MSE: %.2lf", mse_value);
+                }
                 DrawText(weightText, screenWidth/2, 60, 20, my_grey);
                 if (GuiTextBox((Rectangle){ screenWidth - 280, screenHeight /10 +120 , 125, 30 }, dataPointsStr, MAX_INPUT_CHARS, true))
                 {
