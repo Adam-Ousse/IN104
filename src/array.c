@@ -262,37 +262,40 @@ double max_array(array* X){
     return result;
 }
 
-double* mean_normalize(array* X){
-    double minn = min_array(X);
-    double maxx = max_array(X);
-    double meann = mean(X);
-    double* coef_for_anti_normalize = malloc(sizeof(double)*3);
-    coef_for_anti_normalize[0] = meann;
-    coef_for_anti_normalize[1] = minn;
-    coef_for_anti_normalize[2] = maxx;
+void* mean_normalize(array* X,double* coef){
+//    double minn = min_array(X);
+//    double maxx = max_array(X);
+//    double meann = mean(X);
+//    double* coef_for_anti_normalize = malloc(sizeof(double)*3);
+//    coef_for_anti_normalize[0] = meann;
+//    coef_for_anti_normalize[1] = minn;
+//    coef_for_anti_normalize[2] = maxx;
     for(int i=0;i<X->shape[0]; i++){
         for(int j=0;j<X->shape[1]; j++){
             /*X->values[i][j] -= minn;*/
-            X->values[i][j] -= meann;
-            X->values[i][j] /= (maxx-minn);
+            X->values[i][j] -= coef[0];
+            X->values[i][j] /= (coef[2]-coef[1]);
         }
     }
-    return coef_for_anti_normalize;
+
 }
-double* min_max_normalize(array* X){
-    double minn = min_array(X);
-    double maxx = max_array(X);
-    double* coef_for_anti_normalize = malloc(sizeof(double)*2);
-    coef_for_anti_normalize[0] = minn;
-    coef_for_anti_normalize[1] = maxx;
+void min_max_normalize(array* X, double* coef){
+//    if(make_new_coef){
+//        double minn = min_array(X);
+//        double maxx = max_array(X);
+//
+//        coef[0] = minn;
+//        coef[1] = maxx;
+//    }
+
     for(int i=0;i<X->shape[0]; i++){
         for(int j=0;j<X->shape[1]; j++){
             /*X->values[i][j] -= minn;*/
-            X->values[i][j] -= minn;
-            X->values[i][j] /= (maxx-minn);
+            X->values[i][j] -= coef[0];
+            X->values[i][j] /= (coef[1]-coef[0]);
         }
     }
-    return coef_for_anti_normalize;
+
 }
 void min_max_unnormalize(array* X, double* coef){
     for(int i=0;i<X->shape[0]; i++){

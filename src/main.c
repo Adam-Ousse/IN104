@@ -57,7 +57,7 @@ int main(){
     if(TEST){
         main_test();
     }
-    array* Y = subset(read_file("../data/area_price.csv",","),0,1450);
+    array* Y = subset(read_file("../data/height_weight.csv",","),0,10000);
     info(Y);
 
     LinearRegression* Model=LinearRegression_init(1);
@@ -66,10 +66,10 @@ int main(){
     array* x = transpose(linspace(min_array(X), max_array(X), 1000));
 
     LinearRegression_fit(Model, X, y,10,0.0000000001 ,false,false);
-    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
-    printf("a :%lf \n",Model->weights->values[0][0]);
-    info(Model->weights);
-    printf("b :%lf\n",Model->bias);
+//    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
+//    printf("a :%lf \n",Model->weights->values[0][0]);
+//    info(Model->weights);
+//    printf("b :%lf\n",Model->bias);
 // area_price csv : w = 5.67314105, b= 123719.24203732
 // heigh_weight csv : w = 3.08347645, b= -82.57574306
 //    Model->weights= array_init(1,1,3.08347645);
@@ -154,22 +154,22 @@ int main(){
             }
                 break;
             case SCREEN_ONE: {
-                DrawText("Plot", 20, 20, 20, LIGHTGRAY);
+                DrawText("Plot", screenWidth/2, 20, 20, LIGHTGRAY);
                 if(!SCREEN_ONE_isPaused){
                     LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
                 }
                 array_destroy(y_predictions);
 
-                y_predictions = LinearRegression_predict(Model, x);
+                y_predictions = LinearRegression_predict(Model, X);
 
                 fig->axis_set = false;
-                DrawTexture(texture, 0, 0, WHITE);
-                DrawScatterPlot(X, y, fig, 3, GREEN, 50);
+//                DrawTexture(texture, 0, 0, WHITE);
+                DrawScatterPlot(X, y, fig, 3, my_bleu, 50);
                 fig->axis_set = true;
-                DrawLinePlot(x, y_predictions, fig,3, BLUE, 150);
+                DrawLinePlot(X, y_predictions, fig,3, my_red, 150);
                 char weightText[64];
-                sprintf(weightText, "Model weights: %.2lf * x + %.2lf", Model->weights->values[0][0],Model->bias*10000);
-                DrawText(weightText, 20, 60, 20, LIGHTGRAY);
+                sprintf(weightText, "MSE: %.2lf", MSE(y_predictions, y));
+                DrawText(weightText, screenWidth/2, 60, 20, my_grey);
 
                 if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
                     currentScreen = MAIN_MENU;

@@ -11,6 +11,7 @@ typedef struct LinearRegression {
     array* weights;
     double bias;
     double learning_rate;
+    double* coef;
 } LinearRegression;
 LinearRegression* LinearRegression_init(int num_features);
 void LinearRegression_destroy(LinearRegression* model);
