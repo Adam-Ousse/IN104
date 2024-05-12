@@ -77,10 +77,6 @@ int main(){
     array* y_predictions = LinearRegression_predict(Model, x);
 //
     info(y_predictions);
-
-
-
-
     Color my_red = CLITERAL(Color){ 243,102,102,255 };
     Color my_hover_red = CLITERAL(Color){ 252, 124, 143,255};
     Color my_grey = CLITERAL(Color){ 89,98,111,255};

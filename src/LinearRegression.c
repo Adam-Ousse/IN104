@@ -55,7 +55,18 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
         epochs++;
         Log(LOG_INFO, "b errors : %lf", model->learning_rate * sum_all(errors) / (double) (inputs->shape[0]));
         model->bias -= 1000 / (double) (inputs->shape[0]) * model->learning_rate * sum_all(errors);
-        model->weights = subtract(model->weights, prodc(dot_product(transpose(inputs), errors),model->learning_rate / (double) (inputs->shape[0])));
+
+        array* transposed_inputs = transpose(inputs);
+        array* dot_product_result = dot_product(transposed_inputs, errors);
+        array* prodc_result = prodc(dot_product_result, model->learning_rate / (double) (inputs->shape[0]));
+
+        array* old_weights = model->weights;
+        model->weights = subtract(model->weights, prodc_result);
+
+        array_destroy(transposed_inputs);
+        array_destroy(dot_product_result);
+        array_destroy(prodc_result);
+        array_destroy(old_weights);
         //for loop
 //        model->bias -= 10000*model->learning_rate* sum_all(errors)/(double)(inputs->shape[0]);
 //        for(int j=0;j<model->weights->shape[0];j++){
@@ -72,7 +83,7 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
         predictions= LinearRegression_predict(model, inputs);
         array_destroy(errors);
         errors = subtract(predictions, targets);
-        mse= MSE(LinearRegression_predict(model,inputs),targets);
+        mse= MSE(predictions,targets);
         if(debug){
 
             printf("Epoch %d MSE : %lf \n",epochs , MSE(predictions,targets));
