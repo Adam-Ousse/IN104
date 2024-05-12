@@ -10,6 +10,10 @@ Figure* Figureinit(){
     fig->axis_set = false;
     return fig;
 }
+
+void FigureDestroy(Figure* fig){
+    free(fig);
+}
 void DrawScatterPlot(array* x_coords, array* y_coords,Figure * fig,float radius, Color color, int alpha) {
 
     double height = GetScreenHeight();

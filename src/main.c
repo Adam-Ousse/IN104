@@ -10,6 +10,13 @@
 #define TEST true
 #include "array_test.h"
 #include "metrics.h"
+#undef RAYGUI_IMPLEMENTATION
+#define GUI_WINDOW_FILE_DIALOG_IMPLEMENTATION
+
+#define MAX_INPUT_CHARS     10
+//for the length input box
+#include "gui_window_file_dialog.h"
+
 void LogCallback(int logType, const char *text, va_list args) {
     FILE *file = fopen("../log/rayliblog.txt", "a");
     if (file != NULL) {
@@ -35,12 +42,9 @@ void LogCallback(int logType, const char *text, va_list args) {
             vprintf(text, args);
             printf("\n");
         }
-
-
-
     }
 }
-/*typedef enum GameScreen { INTRO, PLOT, GAME } GameScreen;*/
+
 typedef enum GameScreen {
     MAIN_MENU = 0,
     SCREEN_ONE,
@@ -57,32 +61,25 @@ int main(){
     if(TEST){
         main_test();
     }
-    array* Y = subset(read_file("../data/height_weight.csv",","),0,10000);
+    array* Y = subset(read_file("../data/x_6.9_3.2.txt",","),0,15);
     info(Y);
-
     LinearRegression* Model=LinearRegression_init(1);
     array* X= col_subset(Y,0,1);
     array* y =col_subset(Y,1,2);
     array* x = transpose(linspace(min_array(X), max_array(X), 1000));
 
     LinearRegression_fit(Model, X, y,10,0.0000000001 ,false,false);
-//    printf("MSE : %lf \n",MSE(LinearRegression_predict(Model, X), y));
-//    printf("a :%lf \n",Model->weights->values[0][0]);
-//    info(Model->weights);
-//    printf("b :%lf\n",Model->bias);
-// area_price csv : w = 5.67314105, b= 123719.24203732
-// heigh_weight csv : w = 3.08347645, b= -82.57574306
-//    Model->weights= array_init(1,1,3.08347645);
-//    Model->bias = -82.57574306;
     array* y_predictions = LinearRegression_predict(Model, x);
-//
     info(y_predictions);
     Color my_red = CLITERAL(Color){ 243,102,102,255 };
     Color my_hover_red = CLITERAL(Color){ 252, 124, 143,255};
     Color my_grey = CLITERAL(Color){ 89,98,111,255};
     Color my_bleu = CLITERAL(Color){ 102, 175, 243,255};
     Color my_hover_bleu = CLITERAL(Color){ 118, 202, 245,255};
-    Figure* fig =Figureinit();
+    Figure* fig_screen_one =Figureinit();
+    Figure* fig_screen_two =Figureinit();
+    Figure* fig_screen_three =Figureinit();
+
     if (file != NULL) {
         fclose(file);
     }
@@ -97,6 +94,9 @@ int main(){
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
     SetTargetFPS(20);
+    GuiWindowFileDialogState fileDialogState = InitGuiWindowFileDialog("../");
+    char dataPointsStr[MAX_INPUT_CHARS + 1] = "\0";  // Input box text
+    int dataPoints = 0;  // Number of data points
 
 
     // Main game loop
@@ -105,7 +105,7 @@ int main(){
     GameScreen currentScreen = MAIN_MENU;
     Rectangle playButton = { screenWidth/2 - 100, screenHeight/2 - 40, 200, 80 };
     Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
-    bool SCREEN_ONE_isPaused = false;
+    bool SCREEN_TWO_isPaused = false;
     bool close = false;
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -155,40 +155,94 @@ int main(){
                 break;
             case SCREEN_ONE: {
                 DrawText("Plot", screenWidth/2, 20, 20, LIGHTGRAY);
-                if(!SCREEN_ONE_isPaused){
+                if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
+                    currentScreen = MAIN_MENU;
+                fig_screen_two->axis_set = false;
+                DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 150);
+                fig_screen_two->axis_set = true;
+                if (GuiButton((Rectangle) {screenWidth - 300, screenHeight /10, 120, 60}, "Open File")){
+                    fileDialogState.windowActive = true;
+                }
+                if (fileDialogState.windowActive)
+                {
+                    GuiWindowFileDialog(&fileDialogState);
+
+                    if (!fileDialogState.windowActive && fileDialogState.SelectFilePressed)
+                    {
+                        char filePath[1024];
+                        strcpy(filePath, TextFormat("%s" PATH_SEPERATOR "%s", fileDialogState.dirPathText, fileDialogState.fileNameText));
+//                        sprintf(filePath, "%s/%s", fileDialogState.dirPathText, fileDialogState.fileNameText);
+                        Log(LOG_INFO,"%s",filePath);
+                        array_destroy(Y);
+                        array_destroy(X);
+                        array_destroy(y);
+                        array_destroy(x);
+                        Y = read_file(filePath, ","), 0, (int)max(dataPoints,15);
+                        X= col_subset(Y,0,1);
+                        y =col_subset(Y,1,2);
+                        x = transpose(linspace(min_array(X), max_array(X), 1000));
+                        reset(Model);
+                    }
+                }
+
+            }
+                break;
+            case SCREEN_TWO: {
+                DrawText("Linear Regression", 20, 20, 20, my_grey);
+                if(!SCREEN_TWO_isPaused){
                     LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
                 }
                 array_destroy(y_predictions);
 
                 y_predictions = LinearRegression_predict(Model, X);
 
-                fig->axis_set = false;
+                fig_screen_two->axis_set = false;
 //                DrawTexture(texture, 0, 0, WHITE);
-                DrawScatterPlot(X, y, fig, 3, my_bleu, 50);
-                fig->axis_set = true;
-                DrawLinePlot(X, y_predictions, fig,3, my_red, 150);
+                DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 150);
+                fig_screen_two->axis_set = true;
+                DrawLinePlot(X, y_predictions, fig_screen_two, 3, my_red, 150);
                 char weightText[64];
                 sprintf(weightText, "MSE: %.2lf", MSE(y_predictions, y));
                 DrawText(weightText, screenWidth/2, 60, 20, my_grey);
-
+                if (GuiTextBox((Rectangle){ screenWidth - 280, screenHeight /10 +120 , 125, 30 }, dataPointsStr, MAX_INPUT_CHARS, true))
+                {
+                    dataPoints = atoi(dataPointsStr);  // Convert string to int
+                }
                 if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
                     currentScreen = MAIN_MENU;
                 if (GuiButton((Rectangle) {screenWidth / 2 + 60, screenHeight - 80, 120, 60}, "Reset")){
                     reset(Model);
                 }
                 if (GuiButton((Rectangle) {screenWidth / 2 + 180, screenHeight - 80, 120, 60}, "Stop")){
-                    SCREEN_ONE_isPaused=true;
+                    SCREEN_TWO_isPaused=true;
                 }
                 if (GuiButton((Rectangle) {screenWidth / 2 + 300, screenHeight - 80, 120, 60}, "Resume")){
-                    SCREEN_ONE_isPaused=false;
+                    SCREEN_TWO_isPaused=false;
                 }
-            }
-                break;
-            case SCREEN_TWO: {
-                DrawText("SCREEN TWO", 20, 20, 20, LIGHTGRAY);
+                if (GuiButton((Rectangle) {screenWidth - 300, screenHeight /10, 120, 60}, "Open File")){
+                    fileDialogState.windowActive = true;
+                }
+                if (fileDialogState.windowActive)
+                {
+                    GuiWindowFileDialog(&fileDialogState);
 
-                if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
-                    currentScreen = MAIN_MENU;
+                    if (!fileDialogState.windowActive && fileDialogState.SelectFilePressed)
+                    {
+                        char filePath[1024];
+                        strcpy(filePath, TextFormat("%s" PATH_SEPERATOR "%s", fileDialogState.dirPathText, fileDialogState.fileNameText));
+//                        sprintf(filePath, "%s/%s", fileDialogState.dirPathText, fileDialogState.fileNameText);
+                        Log(LOG_INFO,"%s",filePath);
+                        array_destroy(Y);
+                        array_destroy(X);
+                        array_destroy(y);
+                        array_destroy(x);
+                        Y = subset(read_file(filePath, ","), 0, (int)max(dataPoints,15));
+                        X= col_subset(Y,0,1);
+                        y =col_subset(Y,1,2);
+                        x = transpose(linspace(min_array(X), max_array(X), 1000));
+                        reset(Model);
+                    }
+                }
 
             }
                 break;
@@ -222,6 +276,9 @@ int main(){
     array_destroy(y);
     array_destroy(x);
     array_destroy(y_predictions);
+    FigureDestroy(fig_screen_one);
+    FigureDestroy(fig_screen_two);
+    FigureDestroy(fig_screen_three);
     LinearRegression_destroy(Model);
 	return 0;
 }

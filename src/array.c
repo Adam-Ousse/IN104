@@ -209,6 +209,7 @@ array* col_subset(array* X, int column_1 , int column_2){
 
 array* subset(array* X , int row_1, int row_2){
     assert(row_1<row_2);
+    row_2 = (int)min(row_2,X->shape[0]);
     array* result = array_init(row_2-row_1,X->shape[1],0);
     //for loop copy
     /*for(int i=0;i<row_2-row_1;i++){

@@ -108,7 +108,7 @@ void LinearRegression_fit(LinearRegression* model, array* inputs, array* targets
 
 void reset(LinearRegression* model){
 for(int i=0;i<model->weights->shape[0];i++){
-        model->weights->values[i][0] = 0;
+        model->weights->values[i][0] = rand()%100;
     }
-    model->bias = 0;
+    model->bias = rand()%100;
 }

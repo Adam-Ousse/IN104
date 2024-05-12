@@ -15,6 +15,7 @@ typedef struct {
     bool axis_set;
 } Figure;
 Figure* Figureinit();
+void FigureDestroy(Figure* fig);
 void DrawScatterPlot(array* x_coords, array* y_coords, Figure* fig, float radius, Color color, int alpha);
 void DrawLinePlot(array* x_coords, array* y_coords, Figure * fig,float thickness, Color color, int alpha);
 #endif //IN104_PLOT_H
