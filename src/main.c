@@ -12,7 +12,7 @@
 #include "metrics.h"
 #undef RAYGUI_IMPLEMENTATION
 #define GUI_WINDOW_FILE_DIALOG_IMPLEMENTATION
-
+#include "ANN.h"
 #define MAX_INPUT_CHARS     10
 //for the length input box
 #include "gui_window_file_dialog.h"
@@ -98,7 +98,20 @@ int main(){
     char dataPointsStr[MAX_INPUT_CHARS + 1] = "\0";  // Input box text
     int dataPoints = 0;  // Number of data points
 
-
+    //ANN Model
+    int layer_sizes[3]={1,20,1};
+    ANN* ann = ANN_init(3,layer_sizes);
+    ann->weights[0] = transpose(read_file("../data/square_weights/w_1.txt",","));
+    info(ann->weights[0]);
+    ann->weights[1] = read_file("../data/square_weights/w_2.txt",",");
+    info(ann->weights[1]);
+    ann->biases[0]= transpose(read_file("../data/square_weights/b_1.txt",","));
+    info(ann->biases[0]);
+    ann->biases[1]= read_file("../data/square_weights/b_2.txt",",");
+    info(ann->biases[1]);
+    array* x_ann = linspace(-5,5,100);
+//    array* y_ann = ForwardPass(ann,x_ann);
+    
     // Main game loop
     bool isRendered = false;
     Texture2D texture;
@@ -252,10 +265,12 @@ int main(){
             }
                 break;
             case SCREEN_THREE: {
-                DrawText("SCREEN THREE", 20, 20, 20, LIGHTGRAY);
-
+                DrawText("AN", screenWidth/2, 20, 20, my_grey);
                 if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
                     currentScreen = MAIN_MENU;
+                fig_screen_two->axis_set = false;
+//                DrawScatterPlot(transpose(x_ann), transpose(), fig_screen_two, 3, my_bleu, 150);
+                fig_screen_two->axis_set = true;
 
             }
                 break;

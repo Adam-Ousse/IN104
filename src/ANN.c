@@ -18,7 +18,16 @@ ANN* ANN_init(int num_layers, int* layer_sizes){
     model->learning_rate=0;
     return model;
 }
-
+void ANN_destroy(ANN* model){
+    for(int i=0;i<model->num_layers-1;i++){
+        array_destroy(model->weights[i]);
+        array_destroy(model->biases[i]);
+    }
+    free(model->weights);
+    free(model->biases);
+    free(model->layer_sizes);
+    free(model);
+}
 array* ForwardPass(ANN* model,array* X){
     assert(X->shape[0]==model->layer_sizes[0]);
 //    array *Y = array_init(model->layer_sizes[model->num_layers-1],X->shape[1],0);

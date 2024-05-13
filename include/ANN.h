@@ -16,3 +16,6 @@ typedef struct ANN{
     double learning_rate;
 
 } ANN;
+ANN* ANN_init(int num_layers, int* layer_sizes);
+void ANN_destroy(ANN* model);
+array* ForwardPass(ANN* model,array* X);
