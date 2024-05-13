@@ -36,9 +36,9 @@ array* ForwardPass(ANN* model,array* X){
     array_destroy(product);
     array_destroy(Z);
     product = dot_product(A,model->weights[model->num_layers-1]);
-    Z= sum(product,model->biases[model->num_layers-1]);
+//    Z= sum(product,model->biases[model->num_layers-1]);
     array_destroy(A);
-    array* Y = transform(Z,sigmoid);
+    array* Y = sum(product,model->biases[model->num_layers-1]);
     array_destroy(product);
     array_destroy(Z);
     return Y;
