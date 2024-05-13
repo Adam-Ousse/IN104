@@ -7,7 +7,7 @@
 
 #endif //IN104_ANN_H
 #include "array.h"
-
+#include "mathextra.h"
 typedef struct ANN{
     int num_layers;
     int* layer_sizes;
