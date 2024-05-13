@@ -58,6 +58,7 @@ int main(){
     SetTraceLogLevel(LOG_INFO);
     SetTraceLogCallback(LogCallback);
     TraceLog(LOG_INFO, "Starting IN104");
+
     if(TEST){
         main_test();
     }
@@ -86,6 +87,7 @@ int main(){
     int screenWidth = 960;
     int screenHeight = 480;
 
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT );
     InitWindow(screenWidth, screenHeight, "IN104");
     Font globalFont = LoadFont("../assets/Roboto-Medium.ttf");
@@ -107,7 +109,15 @@ int main(){
     Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
     bool SCREEN_TWO_isPaused = false;
     bool close = false;
+    float buttom_mainW= screenWidth/5.39;
+    float buttom_mainH= screenHeight/8.78;
+    float buttom_screenW= screenWidth/8.2;
+    float buttom_screenH= screenHeight/9.08;
     while (!WindowShouldClose()) {
+        buttom_mainW= screenWidth/5.39;
+        buttom_mainH= screenHeight/8.78;
+        buttom_screenW= screenWidth/8.2;
+        buttom_screenH= screenHeight/9.08;
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -127,12 +137,12 @@ int main(){
                 GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(my_bleu));
                 //                DrawText("MAIN MENU", 20, 20, 20, LIGHTGRAY);
                 DrawTextEx(globalFont, "Projet IN104", (Vector2) {20, 20}, globalFont.baseSize, 0,my_grey);
-                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72, (screenHeight / 2 - screenHeight/6.64)-(screenHeight/22.15), screenWidth/5.39, screenHeight/8.78}, "Plot"))
+                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72, (screenHeight / 2 - screenHeight/6.64)-(screenHeight/22.15), buttom_mainW, buttom_mainH}, "Plot"))
                     currentScreen = SCREEN_ONE;
-                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72, (screenHeight / 2 - screenHeight/22.15)-(screenHeight/33.23), screenWidth/5.39, screenHeight/8.78},
+                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72, (screenHeight / 2 - screenHeight/22.15)-(screenHeight/33.23), buttom_mainW, buttom_mainH},
                               "Linear Regression"))
                     currentScreen = SCREEN_TWO;
-                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72 , (screenHeight / 2 + screenHeight/16.61)-(screenHeight/66.46), screenWidth/5.39, screenHeight/8.78},
+                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72 , (screenHeight / 2 + screenHeight/16.61)-(screenHeight/66.46), buttom_mainW, buttom_mainH},
                               "Neural Network"))
                     currentScreen = SCREEN_THREE;
                 if (GuiButton((Rectangle) {screenWidth - screenWidth/10.29, screenHeight - screenHeight/11.07, screenWidth/12.349, screenHeight/16.61}, "GitHub"))
@@ -147,7 +157,7 @@ int main(){
                 GuiSetStyle(BUTTON, TEXT_COLOR_PRESSED, ColorToInt(WHITE));
                 GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(my_red));
 
-                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72,  screenHeight / 2 + screenHeight/6.04, screenWidth/5.39, screenHeight/8.78}, "Exit")) {
+                if (GuiButton((Rectangle) {screenWidth / 2 - screenWidth/13.72,  screenHeight / 2 + screenHeight/6.04, buttom_mainW, buttom_mainH}, "Exit")) {
                     close=true;
                     break;
                 }
@@ -155,12 +165,12 @@ int main(){
                 break;
             case SCREEN_ONE: {
                 DrawText("Plot", screenWidth/2, 20, 20, my_grey);
-                if (GuiButton((Rectangle) {screenWidth / 11.77, screenHeight /15.1, screenWidth/8.2, screenHeight/9.08}, "Back"))
+                if (GuiButton((Rectangle) {screenWidth / 11.77, screenHeight /15.1, buttom_screenW, buttom_screenH}, "Back"))
                     currentScreen = MAIN_MENU;
                 fig_screen_two->axis_set = false;
                 DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 150);
                 fig_screen_two->axis_set = true;
-                if (GuiButton((Rectangle) {screenWidth /4.471, screenHeight /15.1, screenWidth/8.2, screenHeight/9.08}, "Open File")){
+                if (GuiButton((Rectangle) {screenWidth /4.471, screenHeight /15.1, buttom_screenW, buttom_screenH}, "Open File")){
                     fileDialogState.windowActive = true;
                 }
                 if (fileDialogState.windowActive)
@@ -213,18 +223,18 @@ int main(){
                 {
                     dataPoints = atoi(dataPointsStr);  // Convert string to int
                 }
-                if (GuiButton((Rectangle) {screenWidth / 2.277, screenHeight - (screenHeight/8.3), screenWidth/8.2, screenHeight/9.08}, "Back"))
+                if (GuiButton((Rectangle) {screenWidth / 2.277, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Back"))
                     currentScreen = MAIN_MENU;
-                if (GuiButton((Rectangle) {screenWidth / 1.757, screenHeight - (screenHeight/8.3), screenWidth/8.2, screenHeight/9.08}, "Reset")){
+                if (GuiButton((Rectangle) {screenWidth / 1.757, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Reset")){
                     reset(Model);
                 }
-                if (GuiButton((Rectangle) {screenWidth / 1.43, screenHeight - (screenHeight/8.3), screenWidth/8.2, screenHeight/9.08}, "Stop")){
+                if (GuiButton((Rectangle) {screenWidth / 1.43, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Stop")){
                     SCREEN_TWO_isPaused=true;
                 }
-                if (GuiButton((Rectangle) {screenWidth / 1.2, screenHeight - (screenHeight/8.3), screenWidth/8.2, screenHeight/9.08}, "Resume")){
+                if (GuiButton((Rectangle) {screenWidth / 1.2, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Resume")){
                     SCREEN_TWO_isPaused=false;
                 }
-                if (GuiButton((Rectangle) {screenWidth /8.58, screenHeight /10, screenWidth/8.2, screenHeight/9.08}, "Open File")){
+                if (GuiButton((Rectangle) {screenWidth /8.58, screenHeight /10, buttom_screenW, buttom_screenH}, "Open File")){
                     fileDialogState.windowActive = true;
                 }
                 if (fileDialogState.windowActive)
@@ -254,7 +264,7 @@ int main(){
             case SCREEN_THREE: {
                 DrawText("SCREEN THREE", 20, 20, 20, LIGHTGRAY);
 
-                if (GuiButton((Rectangle) {screenWidth / 2 - 60, screenHeight - 80, 120, 60}, "Back"))
+                if (GuiButton((Rectangle) {screenWidth / 2 - (screenWidth/20.58), screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Back"))
                     currentScreen = MAIN_MENU;
 
             }
