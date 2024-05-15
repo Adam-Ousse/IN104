@@ -15,7 +15,7 @@ double max(double a, double b){
 }
 
 double sigmoid(double x){
-    return 1/(1+exp(-x));
+    return 1.0/(1+exp(-x));
 }
 double sigmoid_prime(double x){
     return sigmoid(x)*(1-sigmoid(x));
@@ -59,4 +59,8 @@ double softmax(double* x, int n){
         x[i] = exp(x[i])/sum;
     }
     return 0;
+}
+
+double identity(double x){
+    return x;
 }

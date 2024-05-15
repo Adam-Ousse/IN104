@@ -9,6 +9,7 @@
 #include <unistd.h>// for getcwd
 #include <stdbool.h>
 #include "raylib.h"
+#include "time.h"
 /*
  * Log function that writes to a file and the console it outputs the message in printf-style the file directory and line
  */

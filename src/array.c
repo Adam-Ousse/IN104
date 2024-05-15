@@ -112,6 +112,29 @@ array* sum(array* A, array* B){
 	}
 	return C;
 }
+array* sum_to_all_col(array* A, array* B){
+    assert(A->shape[0]==B->shape[0] && B->shape[1]==1);
+    array* C = array_init(A->shape[0],A->shape[1],0);
+    for(int j =0;j<A->shape[1];j++){
+    for(int i=0; i<A->shape[0];i++){
+            C->values[i][j] = A->values[i][j] + B->values[i][0];
+        }
+    }
+    return C;
+}
+
+array* sum_to_all_row(array* A, array* B){
+//    printf("A shape : (%d,%d)\n",A->shape[0],A->shape[1]);
+//    printf("B shape : (%d,%d)\n",B->shape[0],B->shape[1]);
+    assert(A->shape[1]==B->shape[1] && B->shape[0]==1);
+    array* C = array_init(A->shape[0],A->shape[1],0);
+    for(int i =0;i<A->shape[0];i++){
+        for(int j=0; j<A->shape[1];j++){
+            C->values[i][j] = A->values[i][j] + B->values[0][j];
+        }
+    }
+    return C;
+}
 
 array* subtract(array* A, array* B){
     assert(same_size(A,B));
@@ -221,6 +244,25 @@ array* subset(array* X , int row_1, int row_2){
     for(int i=0;i<row_2-row_1;i++){
         result->values[i] = X->values[row_1+i];
     }
+    return result;
+}
+
+array* sample(array* X, int n){
+    //a uniform sample of X of n samples
+    assert(n <= X->shape[0]); // Ensure we are not asking for more samples than available
+
+    // Calculate the interval between samples
+    double interval = (double)X->shape[0] / n;
+
+    // Create a new array to store the sampled elements
+    array* result = array_init(n, X->shape[1], 0);
+
+    // Select samples at even intervals
+    for(int i = 0; i < n; i++) {
+        int index = (int)(interval * i);
+        result->values[i] = X->values[index];
+    }
+
     return result;
 }
 void info(array* X){
@@ -395,4 +437,24 @@ bool equal(array* A, array* B){
         }
     }
     return true;
+}
+
+double rand_normal(double mean, double stddev) {
+    // Using Box-Muller transform
+    double u = (double)rand() / RAND_MAX;
+    double v = (double)rand() / RAND_MAX;
+    double z = sqrt(-2.0 * log(u)) * cos(2.0 * M_PI * v);
+    return mean + z * stddev;
+}
+
+// He-initialization function for a weight matrix
+array* he_init(int fan_in, int fan_out) {
+    array* weights = array_init(fan_in, fan_out, 0);
+    double stddev = sqrt(2.0 / fan_in);
+    for (int i = 0; i < fan_in; i++) {
+        for (int j = 0; j < fan_out; j++) {
+            weights->values[i][j] = rand_normal(0, stddev);
+        }
+    }
+    return weights;
 }

@@ -65,6 +65,7 @@ array* prod(array* A, array* B);
  * @return Somme de A et B : A+B
  */
 array* sum(array* A, array* B);
+array* sum_to_all_col(array* A, array* B);
 /**
  *
  * @param A Matrice
@@ -187,5 +188,8 @@ double gershgorin_radius(array* A);
 double optimal_learning_rate(array* A);
 bool same_size(array* A, array* B);
 bool equal(array* A, array* B);
-
+double rand_normal(double mean, double stddev);
+array* he_init(int fan_in, int fan_out);
+array* sum_to_all_row(array* A, array* B);
+array* sample(array* X, int n);
 #endif /* ARRAY_H */
