@@ -101,10 +101,10 @@ int main(){
     int dataPoints_screen_two = 0;  // Number of data points
     int dataPoints_screen_one = 0; // Number of data points screen one
     //ANN Model
-    int layer_sizes[5]={1,16,16,16,1};
+    int layer_sizes[6]={1,12,12,32,12,1};
     //no activation function for the input
-    ACTIVATION_FUNCTION activation_functions[4]={RELU,RELU,RELU,IDENTITY};
-    ANN* ann = ANN_init(5,layer_sizes,activation_functions);
+    ACTIVATION_FUNCTION activation_functions[5]={RELU,RELU,SIGMOID,RELU,IDENTITY};
+    ANN* ann = ANN_init(6,layer_sizes,activation_functions);
 //    for(int i=0;i<4;i++){
 //
 //        char weight_file[50];
@@ -122,13 +122,16 @@ int main(){
 //        info(ann->biases[i]);
 //    }
 
-    array* x_ann = transpose(linspace(-10,10,100));
+    array* x_ann = transpose(linspace(-10,10,500));
+    int samples = 200;
+    array* x_ann_sample = sample(x_ann,samples);
 
-    array* x_ann_sample = sample(x_ann,50);
-    array* x_ann_sample_2 = elementwise_product(x_ann_sample,x_ann_sample);
-    array* x_ann_2 = elementwise_product(x_ann,x_ann);
-    double learning_rate =0.007;
-    array* loss= train(ann,x_ann,x_ann_2,50, learning_rate);
+    array* x_ann_2 = sum(elementwise_product(prodc(transform(prodc(x_ann,2),sin),10),transform(divisionc(x_ann,5),square)),prodc(transform(prodc(x_ann,6.0/10),cos),10));
+//    array* x_ann_2 = transform(sumc(transform(transform(transform(x_ann,exp),sin),relu),1),log);
+    array* x_ann_sample_2 = sample(x_ann_2,samples);
+
+    double learning_rate =0.01;
+    array* loss= train(ann,x_ann,x_ann_2,10, learning_rate);
     printf("finished trainig");
     array* y_ann = forward(ann,x_ann);
 //    for(int i=0;i<4;i++){

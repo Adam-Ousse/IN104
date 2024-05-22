@@ -13,4 +13,5 @@ double tanh(double x);
 double tanh_prime(double x);
 double softmax(double* x, int n);
 double identity(double x);
+double square(double x);
 #endif

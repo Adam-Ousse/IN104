@@ -64,3 +64,9 @@ double softmax(double* x, int n){
 double identity(double x){
     return x;
 }
+double square(double x){
+    if (x <1 && x>-1){
+        return 1;
+    }
+    return 0;
+}
