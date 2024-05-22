@@ -192,4 +192,6 @@ double rand_normal(double mean, double stddev);
 array* he_init(int fan_in, int fan_out);
 array* sum_to_all_row(array* A, array* B);
 array* sample(array* X, int n);
+array* collapse_sum(array* A);
+array* divisionc(array* A, double c);
 #endif /* ARRAY_H */

@@ -62,3 +62,26 @@ array* read_file(const char* filename,const char* delimiter){
     Log(LOG_INFO, "Closing file %s", filename);
     return data;
 }
+
+
+
+void write_to_csv(const char* filename, array* data) {
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        Log(LOG_ERROR, "Could not open file %s", filename);
+        return;
+    }
+
+    for (int i = 0; i < data->shape[0]; i++) {
+        for (int j = 0; j < data->shape[1]; j++) {
+            fprintf(file, "%f", data->values[i][j]);
+            if (j < data->shape[1] - 1) {
+                fprintf(file, ",");
+            }
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+    Log(LOG_INFO, "Data written to file %s", filename);
+}

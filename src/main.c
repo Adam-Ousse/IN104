@@ -63,6 +63,7 @@ int main(){
     }
     array* Y = subset(read_file("../data/x_6.9_3.2.txt",","),0,15);
     info(Y);
+
     LinearRegression* Model=LinearRegression_init(1);
     array* X= col_subset(Y,0,1);
     array* y =col_subset(Y,1,2);
@@ -100,31 +101,36 @@ int main(){
     int dataPoints_screen_two = 0;  // Number of data points
     int dataPoints_screen_one = 0; // Number of data points screen one
     //ANN Model
-    int layer_sizes[5]={1,12,12,12,1};
+    int layer_sizes[5]={1,16,16,16,1};
     //no activation function for the input
     ACTIVATION_FUNCTION activation_functions[4]={RELU,RELU,RELU,IDENTITY};
     ANN* ann = ANN_init(5,layer_sizes,activation_functions);
-    for(int i=0;i<4;i++){
-        layer* l = ann->layers[i];
-        char weight_file[50];
-        char bias_file[50];
-        sprintf(weight_file, "../data/square_weights/layer_%d_weights.csv", i);
+//    for(int i=0;i<4;i++){
+//
+//        char weight_file[50];
+//        char bias_file[50];
+//        sprintf(weight_file, "../data/square_weights/layer_%d_weights.csv", i);
+//
+//        sprintf(bias_file, "../data/square_weights/layer_%d_biases.csv", i);
+//        array_destroy(ann->weights[i]);
+//        array_destroy(ann->biases[i]);
+//        ann->weights[i] = read_file(weight_file, ",");
+//        printf("weights of layer %d\n",i+1);
+//        info(ann->weights[i]);
+//        printf("biases of layer %d\n",i+1);
+//        ann->biases[i] = read_file(bias_file, ",");
+//        info(ann->biases[i]);
+//    }
 
-        sprintf(bias_file, "../data/square_weights/layer_%d_biases.csv", i);
-        array_destroy(l->weights);
-        array_destroy(l->biases);
-        l->weights = read_file(weight_file, ",");
-        printf("weights of layer %d\n",i+1);
-        info(l->weights);
-        printf("biases of layer %d\n",i+1);
-        l->biases = transpose(read_file(bias_file, ","));
-        info(l->biases);
-    }
+    array* x_ann = transpose(linspace(-10,10,100));
 
-    array* x_ann = transpose(linspace(-500,500,1000));
     array* x_ann_sample = sample(x_ann,50);
-    array* x_ann_2 = elementwise_product(x_ann_sample,x_ann_sample);
-    array* y_ann = forward_propagate(ann,x_ann);
+    array* x_ann_sample_2 = elementwise_product(x_ann_sample,x_ann_sample);
+    array* x_ann_2 = elementwise_product(x_ann,x_ann);
+    double learning_rate =0.007;
+    array* loss= train(ann,x_ann,x_ann_2,50, learning_rate);
+    printf("finished trainig");
+    array* y_ann = forward(ann,x_ann);
 //    for(int i=0;i<4;i++){
 //        layer* l = ann->layers[i];
 //
@@ -319,9 +325,15 @@ int main(){
                 }
 
                 fig_screen_two->axis_set = false;
+//                train(ann,x_ann_sample,x_ann_2,10,0.0001);
+                DrawScatterPlot(x_ann_sample,x_ann_sample_2,fig_screen_two,3,my_red,150);
+
                 DrawLinePlot(x_ann, y_ann, fig_screen_two, 3, my_bleu, 150);
                 fig_screen_two->axis_set = true;
-                DrawScatterPlot(x_ann_sample,x_ann_2,fig_screen_two,3,my_red,150);
+                array_destroy(loss);
+                loss=train(ann,x_ann,x_ann_2,3, learning_rate);
+                array_destroy(y_ann);
+                y_ann = forward(ann,x_ann);
 
             }
                 break;
@@ -339,6 +351,8 @@ int main(){
     info(Model->weights);
     printf("b :%lf\n",Model->bias);
     printf("R2 : %lf\n",R2(LinearRegression_predict(Model,X),y));
+
+
     UnloadTexture(texture);
     UnloadFont(globalFont);
     CloseWindow();

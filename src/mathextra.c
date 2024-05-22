@@ -27,7 +27,7 @@ double relu(double x){
     return 0;
 }
 double relu_prime(double x){
-    if(x>0){
+    if(x>=0){
         return 1;
     }
     return 0;

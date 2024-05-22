@@ -4,8 +4,9 @@
 
 #ifndef IN104_ANN_H
 #define IN104_ANN_H
-
-#endif //IN104_ANN_H
+#define beta1  0.9
+#define beta2 0.999
+#define epsilon 1e-8
 #include "array.h"
 #include "mathextra.h"
 
@@ -16,22 +17,30 @@ typedef enum ACTIVATION_FUNCTION {
     SOFTMAX,
     IDENTITY
 } ACTIVATION_FUNCTION;
-typedef struct layer {
-    array* weights;  // Weight matrix
-    array* biases;   // Bias vector
-    array* activation;   // Output vector
-    array* delta;    // Delta for backpropagation
-    ACTIVATION_FUNCTION activation_function;
-} layer;
 typedef struct ann {
     int num_layers;
+    int num_layers_no_input;
     int* layer_sizes; // Array of sizes of each layer
-    layer** layers;
     ACTIVATION_FUNCTION* activation_functions;
+    array** weights;
+    array** biases;
+    array** z;
+    array** a;
+    array** m;
+    array** v;
+    array** m_b;
+    array** v_b;
+    double t;
 } ANN;
-layer* layer_init(int input_size, int output_size, ACTIVATION_FUNCTION activation_function);
+
 ANN* ANN_init(int num_layers, int* layer_sizes, ACTIVATION_FUNCTION* activation_functions);
 void ANN_destroy(ANN* network);
-void layer_destroy(layer* l);
-array* activate(array* input, array* weights, array* biases, double (*activation_func)(double));
-array* forward_propagate(ANN* network, array* input);
+array* activation(array* z, ACTIVATION_FUNCTION activation);
+array* acrivation_derivative(array* z, ACTIVATION_FUNCTION activation);
+array* forward(ANN* network, array* x);
+void backward(ANN* network, array* x, array* y, double learning_rate);
+void adam_update(ANN* network, array* w,array* b, array* dw, array* db, int i, double learning_rate);
+array* predict(ANN* network, array* x);
+array* train(ANN* network, array* x, array* y, int epochs, double learning_rate);
+void network_info(ANN* network);
+#endif //IN104_ANN_H

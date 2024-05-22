@@ -43,6 +43,7 @@ array* vector_row_init(int m, double c){
 	return V;
 }
 void array_destroy(array* A){
+    assert(A!=NULL);
 	for(int i=0;i<A->shape[0];i++){
 		free(A->values[i]);
 		
@@ -88,7 +89,8 @@ array* eye(int n, int m){
 }
 
 array* prod(array* A, array*B){
-
+//    printf("A shape : (%d,%d)\n",A->shape[0],A->shape[1]);
+//    printf("B shape : (%d,%d)\n",B->shape[0],B->shape[1]);
 	assert(A->shape[1]== B->shape[0]);
 	array* C = array_init(A->shape[0],B->shape[1],0);
 	for(int i=0; i< A->shape[0];i++){
@@ -188,7 +190,16 @@ array* prodc(array* A, double c){
 	}
 	return C;
 }
-
+array* divisionc(array* A, double c){
+    assert(c!=0);
+    array* C = array_init(A->shape[0],A->shape[1],0);
+    for(int i=0; i<A->shape[0];i++){
+        for(int j =0;j<A->shape[1];j++){
+            C->values[i][j] = A->values[i][j] / c;
+        }
+    }
+    return C;
+}
 
 array* dot_product(array* A, array* v) {
     // Assuming v is a column vector
@@ -458,3 +469,15 @@ array* he_init(int fan_in, int fan_out) {
     }
     return weights;
 }
+
+array* collapse_sum(array* A){
+    array* result = array_init(1,A->shape[1],0);
+    for(int j=0;j<A->shape[1];j++){
+        for(int i=0;i<A->shape[0];i++){
+            result->values[0][j]+=A->values[i][j];
+        }
+    }
+    return result;
+}
+
+
