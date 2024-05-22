@@ -39,7 +39,7 @@ array* activation(array* z, ACTIVATION_FUNCTION activation);
 array* acrivation_derivative(array* z, ACTIVATION_FUNCTION activation);
 array* forward(ANN* network, array* x);
 void backward(ANN* network, array* x, array* y, double learning_rate);
-void adam_update(ANN* network, array* w,array* b, array* dw, array* db, int i, double learning_rate);
+void adam_update(ANN* network, array* dw, array* db, int i, double learning_rate);
 array* predict(ANN* network, array* x);
 array* train(ANN* network, array* x, array* y, int epochs, double learning_rate);
 void network_info(ANN* network);
