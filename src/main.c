@@ -146,8 +146,8 @@ int main(){
 //    array* x_ann_2 = transform(sumc(transform(transform(transform(x_ann,exp),sin),relu),1),log);
     array* x_ann_sample_2 = sample(x_ann_2,samples);
     bool reseted_ann = false;
-    double learning_rate =0.007;
-    array* loss= train(ann,x_ann,x_ann_2,10, learning_rate);
+    double learning_rate =0.01;
+    array* loss= train(ann,x_ann,x_ann_2,1, learning_rate,0.25);
     printf("finished trainig");
     array* y_ann = forward(ann,x_ann);
 
@@ -421,7 +421,7 @@ int main(){
 
                 if(!SCREEN_THREE_isPaused){
                     reseted_ann=false;
-                    loss=train(ann,x_ann,x_ann_2,3, learning_rate);
+                    loss=train(ann,x_ann,x_ann_2,3, learning_rate,0.25);
                     write_to_csv("../loss.csv",loss,"a");
                     array_destroy(loss);
                     array_destroy(y_ann);

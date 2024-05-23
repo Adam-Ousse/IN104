@@ -9,7 +9,6 @@
 #define epsilon 1e-8
 #include "array.h"
 #include "mathextra.h"
-
 typedef enum ACTIVATION_FUNCTION {
     SIGMOID,
     RELU,
@@ -20,7 +19,7 @@ typedef enum ACTIVATION_FUNCTION {
 typedef struct ann {
     int num_layers;
     int num_layers_no_input;
-    int* layer_sizes; // Array of sizes of each layer
+    int* layer_sizes;
     ACTIVATION_FUNCTION* activation_functions;
     array** weights;
     array** biases;
@@ -41,7 +40,7 @@ array* forward(ANN* network, array* x);
 void backward(ANN* network, array* x, array* y, double learning_rate);
 void adam_update(ANN* network, array* dw, array* db, int i, double learning_rate);
 array* predict(ANN* network, array* x);
-array* train(ANN* network, array* x, array* y, int epochs, double learning_rate);
+array* train(ANN* network, array* x, array* y, int epochs, double learning_rate,double precision);
 void network_info(ANN* network);
 void reset_ann(ANN* network);
 #endif //IN104_ANN_H

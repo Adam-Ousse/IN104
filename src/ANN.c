@@ -258,7 +258,7 @@ void adam_update(ANN* network, array* dw, array* db, int i, double learning_rate
 
 }
 
-array* train(ANN* network, array* x, array* y, int epochs, double learning_rate){
+array* train(ANN* network, array* x, array* y, int epochs, double learning_rate,double precision){
     array* loss = vector_col_init(epochs,0);
     array* output;
     array* temp;
@@ -282,6 +282,10 @@ array* train(ANN* network, array* x, array* y, int epochs, double learning_rate)
         }
         array_destroy(network->z[0]);
         array_destroy(output);
+        if(loss->values[i][0]<precision){
+            printf("reached %lf precision \n", precision );
+            break;
+        }
     }
     return loss;
 }
