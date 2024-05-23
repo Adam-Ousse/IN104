@@ -147,6 +147,7 @@ int main(){
     array* x_ann_sample_2 = sample(x_ann_2,samples);
     bool reseted_ann = false;
     double learning_rate =0.01;
+    float k =0.01;
     array* loss= train(ann,x_ann,x_ann_2,1, learning_rate,0.25);
     printf("finished trainig");
     array* y_ann = forward(ann,x_ann);
@@ -410,7 +411,22 @@ int main(){
             }
                 break;
             case SCREEN_THREE: {
-                DrawText("ANN approximation of x^2", screenWidth/2, 20, 20, my_grey);
+                DrawText("Réseau de neurones artificiels", screenWidth/2, 20, 20, my_grey);
+
+                GuiSlider((Rectangle){ screenWidth/6, screenHeight - (screenHeight/7.0), 200, 20 }, "Learning Rate", NULL, &k, 0.001, 0.1);
+                learning_rate= (double)k;
+                printf("%lf learning \n",learning_rate);
+                char l_text[64];
+
+                if (learning_rate > 0.01) {
+                    sprintf(l_text, "Learning rate: %.3lf", learning_rate);
+                    DrawText(l_text, screenWidth/6, screenHeight - (screenHeight/5.0), screenWidth/70, my_red);
+
+                } else {
+                    sprintf(l_text, "Learning rate: %.3lf", learning_rate);
+                    DrawText(l_text, screenWidth/6, screenHeight - (screenHeight/5.0), screenWidth/70, my_grey);
+
+                }
 
                 fig_screen_two->axis_set = false;
 
