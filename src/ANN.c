@@ -64,6 +64,50 @@ void ANN_destroy(ANN* network) {
     free(network->v_b);
     free(network);
 }
+void reset_ann(ANN* network){
+    for (int i = 0; i < network->num_layers_no_input; i++) {
+        array_destroy(network->weights[i]);
+        array_destroy(network->biases[i]);
+        array_destroy(network->m[i]);
+        array_destroy(network->v[i]);
+        array_destroy(network->m_b[i]);
+        array_destroy(network->v_b[i]);
+
+        array_destroy(network->z[i]);
+    }
+    for (int i = 1; i < network->num_layers_no_input; i++) {
+
+        array_destroy(network->a[i]);
+
+    }
+//    array_destroy(network->a[network->num_layers_no_input]);
+    free(network->a);
+    free(network->z);
+    free(network->weights);
+    free(network->biases);
+    free(network->m);
+    free(network->v);
+    free(network->m_b);
+    free(network->v_b);
+    network->weights = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->biases = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->a = malloc(sizeof(array*) * (network->num_layers ));
+    network->z = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->m = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->v = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->m_b = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->v_b = malloc(sizeof(array*) * (network->num_layers_no_input ));
+    network->t = 0;
+    for(int i=0;i<network->num_layers_no_input;i++){
+        network->weights[i]=he_init(network->layer_sizes[i],network->layer_sizes[i+1]);
+        network->m[i] = array_init(network->weights[i]->shape[0],network->weights[i]->shape[1],0);
+        network->v[i] = array_init(network->weights[i]->shape[0],network->weights[i]->shape[1],0);
+        network->biases[i] = vector_row_init(network->layer_sizes[i+1],0);
+        network->m_b[i] = vector_row_init(network->layer_sizes[i+1],0);
+        network->v_b[i] = vector_row_init(network->layer_sizes[i+1],0);
+    }
+
+}
 array* activation(array* z, ACTIVATION_FUNCTION activation){
     switch (activation) {
         case SIGMOID:

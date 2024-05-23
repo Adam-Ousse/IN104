@@ -5,7 +5,8 @@
 #ifndef IN104_DATA_H
 #define IN104_DATA_H
 #include "array.h"
+#include "data.h"
 char *strsep(char **stringp, const char *delim);
 array* read_file(const char* filename,const char* delimiter);
-void write_to_csv(const char* filename, array* data);
+void write_to_csv(const char* filename, array* data,char type[] );
 #endif //IN104_DATA_H

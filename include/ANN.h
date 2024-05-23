@@ -43,4 +43,5 @@ void adam_update(ANN* network, array* dw, array* db, int i, double learning_rate
 array* predict(ANN* network, array* x);
 array* train(ANN* network, array* x, array* y, int epochs, double learning_rate);
 void network_info(ANN* network);
+void reset_ann(ANN* network);
 #endif //IN104_ANN_H

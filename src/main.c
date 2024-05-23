@@ -49,12 +49,15 @@ typedef enum GameScreen {
     MAIN_MENU = 0,
     SCREEN_ONE,
     SCREEN_TWO,
-    SCREEN_THREE
+    SCREEN_THREE,
+    SCREEN_FOUR,
 } GameScreen;
 
 int main(){
     //    resets the Rayliblogfile
     FILE *file = fopen("../log/rayliblog.txt", "w");
+    FILE *file_temp = fopen("../loss.csv", "w");
+    fclose(file_temp);
 
 
     SetTraceLogLevel(LOG_INFO);
@@ -63,7 +66,7 @@ int main(){
     if(TEST){
         main_test();
     }
-    array* Y = subset(read_file("../data/x_6.9_3.2.txt",","),0,15);
+    array* Y = read_file("../data/height_weight.csv",",");
     LinearRegression* Model=LinearRegression_init(1);
     array* X= col_subset(Y,0,1);
     array* y =col_subset(Y,1,2);
@@ -78,15 +81,21 @@ int main(){
     Color my_grey = CLITERAL(Color){ 89,98,111,255};
     Color my_bleu = CLITERAL(Color){ 102, 175, 243,255};
     Color my_hover_bleu = CLITERAL(Color){ 118, 202, 245,255};
+    // Screen sizes:
+    int screenWidth = 960;
+    int screenHeight = 480;
     //Figures
     Figure* fig_screen_one =Figureinit();
     Figure* fig_screen_two =Figureinit();
     Figure* fig_screen_three =Figureinit();
+    Figure*  fig_screen_four=Figureinit();
+    static Texture2D scatterPlotTexture;
+    static bool isScatterPlotSaved = false;
+    static int lastScreenWidth = 960;
+    static int lastScreenHeight = 480;
+    static RenderTexture2D target;
 
 
-    // Screen sizes:
-    int screenWidth = 960;
-    int screenHeight = 480;
     //screen config :
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT );
     InitWindow(screenWidth, screenHeight, "IN104");
@@ -105,7 +114,7 @@ int main(){
     char dataPointsStr_screen_one[MAX_INPUT_CHARS + 1] = "\0";  // Input box text*
     char dataPointsStr_screen_three[MAX_INPUT_CHARS + 1] = "\0";  // Input box text
     int dataPoints_screen_two = 0;  // Number of data points
-    int dataPoints_screen_one = 0; // Number of data points screen one
+    int dataPoints_screen_one = 100000; // Number of data points screen one
     int dataPoints_screen_three = 0;  // Number of data points screen three
     //ANN Model
     int layer_sizes[6]={1,12,12,32,12,1};
@@ -136,7 +145,7 @@ int main(){
     array* x_ann_2 = sum(elementwise_product(prodc(transform(prodc(x_ann,2),sin),10),transform(divisionc(x_ann,5),square)),prodc(transform(prodc(x_ann,6.0/10),cos),10));
 //    array* x_ann_2 = transform(sumc(transform(transform(transform(x_ann,exp),sin),relu),1),log);
     array* x_ann_sample_2 = sample(x_ann_2,samples);
-
+    bool reseted_ann = false;
     double learning_rate =0.007;
     array* loss= train(ann,x_ann,x_ann_2,10, learning_rate);
     printf("finished trainig");
@@ -149,11 +158,18 @@ int main(){
     Rectangle playButton = { screenWidth/2 - 100, screenHeight/2 - 40, 200, 80 };
     Rectangle plotButton = { screenWidth/2 - 100, screenHeight/2 + 60, 200, 80 }; // New button below the play button
     bool SCREEN_TWO_isPaused = false;
+    char inputXStr[MAX_INPUT_CHARS] = "\0";
+    double inputx=0;
+    double predictedY = 0.0;
+    bool SCREEN_THREE_isPaused = false;
     bool close = false;
     float buttom_mainW= screenWidth/5.39;
     float buttom_mainH= screenHeight/8.78;
     float buttom_screenW= screenWidth/8.2;
     float buttom_screenH= screenHeight/9.08;
+    float open_file_x,open_file_y ;
+    float back_button_x,back_button_y;
+    array* loss_values;
     while (!WindowShouldClose()) {
         BeginDrawing();
 
@@ -167,6 +183,10 @@ int main(){
         buttom_mainH= screenHeight/8.78;
         buttom_screenW= screenWidth/8.2;
         buttom_screenH= screenHeight/9.08;
+        open_file_x= screenWidth /4.471;
+        open_file_y = screenHeight /15.1;
+        back_button_x=screenWidth / 11.77;
+        back_button_y=screenHeight /15.1;
         // Keyboard event for 'b' key
         if (IsKeyPressed(KEY_B)) currentScreen = MAIN_MENU;
 
@@ -208,19 +228,49 @@ int main(){
             }
                 break;
             case SCREEN_ONE: {
-                DrawText("Plot", screenWidth/2, 20, 20, my_grey);
-                if (GuiButton((Rectangle) {screenWidth / 11.77, screenHeight /15.1, buttom_screenW, buttom_screenH}, "Back"))
-                    currentScreen = MAIN_MENU;
+                //set axis as not set
                 fig_screen_two->axis_set = false;
-                DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 150);
-                DrawText("Number of points", screenWidth/8.87, screenHeight /5, 10, my_grey);
+                //resaves the plot
+                if (screenWidth != lastScreenWidth || screenHeight != lastScreenHeight) {
+                    lastScreenWidth = screenWidth;
+                    lastScreenHeight = screenHeight;
+                    isScatterPlotSaved = false;
+                }
+                if (!isScatterPlotSaved) {
+                    UnloadRenderTexture(target);
+                    target = LoadRenderTexture(screenWidth, screenHeight);
+                    BeginTextureMode(target);
+                    ClearBackground(RAYWHITE);
+                    DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 230);
+                    EndTextureMode();
+                    scatterPlotTexture = target.texture;
+                    isScatterPlotSaved = true;
+                }
+                Rectangle sourceRect = { 0, 0, (float)scatterPlotTexture.width, (float)-scatterPlotTexture.height }; // Flip the height by using a negative value
+                Rectangle destRect = { 0, 0, (float)screenWidth, (float)screenHeight };
+                Vector2 origin = { 0, 0 };
+                // Draw the texture correctly oriented
+                DrawTexturePro(scatterPlotTexture, sourceRect, destRect, origin, 0.0f, WHITE);
+
+
+                DrawText("Plot", screenWidth/2, 20, 20, my_grey);
+                if (GuiButton((Rectangle) {back_button_x, back_button_y, buttom_screenW, buttom_screenH}, "Back")) {
+                    currentScreen = MAIN_MENU;
+                    isScatterPlotSaved = false;
+                }
+
+                DrawText("Number of points", screenWidth/8.5, screenHeight /5, screenWidth/77.1, my_grey);
+                //input button for the number of points
                 if (GuiTextBox((Rectangle){ screenWidth/8.87, screenHeight /4.03 , screenWidth/7.71, screenHeight/17.26 }, dataPointsStr_screen_one, MAX_INPUT_CHARS, true))
                 {
                     dataPoints_screen_one = atoi(dataPointsStr_screen_one);  // Convert string to int
                 }
+                // set the axis as true so that the scale doesnt change
                 fig_screen_two->axis_set = true;
-                if (GuiButton((Rectangle) {screenWidth /4.471, screenHeight /15.1, buttom_screenW, buttom_screenH}, "Open File")){
+                //button to open file
+                if (GuiButton((Rectangle) {open_file_x, open_file_y, buttom_screenW, buttom_screenH}, "Open File")){
                     fileDialogState.windowActive = true;
+
                 }
                 if(!fileDialogState.windowActive){
                     GuiSetStyle(DEFAULT, TEXT_SIZE, (int)(2*screenWidth/100.0 ));
@@ -245,24 +295,44 @@ int main(){
                         X= col_subset(Y,0,1);
                         y =col_subset(Y,1,2);
                         x = transpose(linspace(min_array(X), max_array(X), 1000));
-                        reset(Model);
+                        isScatterPlotSaved = false;
                     }
                 }
 
             }
                 break;
             case SCREEN_TWO: {
+
+                //DrawTexture(texture, 0, 0, WHITE);
+                //resaves the plot
+                fig_screen_two->axis_set = false;
+                if (screenWidth != lastScreenWidth || screenHeight != lastScreenHeight) {
+                    lastScreenWidth = screenWidth;
+                    lastScreenHeight = screenHeight;
+                    isScatterPlotSaved = false;
+                }
+                if (!isScatterPlotSaved) {
+                    UnloadRenderTexture(target);
+                    target = LoadRenderTexture(screenWidth, screenHeight);
+                    BeginTextureMode(target);
+                    ClearBackground(RAYWHITE);
+                    DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 230);
+                    EndTextureMode();
+                    scatterPlotTexture = target.texture;
+                    isScatterPlotSaved = true;
+                }
+                Rectangle sourceRect = { 0, 0, (float)scatterPlotTexture.width, (float)-scatterPlotTexture.height }; // Flip the height by using a negative value
+                Rectangle destRect = { 0, 0, (float)screenWidth, (float)screenHeight };
+                Vector2 origin = { 0, 0 };
+                // Draw the texture correctly oriented
+                DrawTexturePro(scatterPlotTexture, sourceRect, destRect, origin, 0.0f, WHITE);
                 DrawText("Linear Regression", screenWidth/2, 20, 20, my_grey);
                 if(!SCREEN_TWO_isPaused){
                     LinearRegression_fit(Model, X, y,5,0.0000000001 ,false,false);
                 }
+
                 array_destroy(y_predictions);
-
                 y_predictions = LinearRegression_predict(Model, X);
-
-                fig_screen_two->axis_set = false;
-//                DrawTexture(texture, 0, 0, WHITE);
-                DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 150);
                 fig_screen_two->axis_set = true;
                 DrawLinePlot(X, y_predictions, fig_screen_two, 3, my_red, 150);
                 char weightText[64];
@@ -273,12 +343,31 @@ int main(){
                     sprintf(weightText, "MSE: %.2lf", mse_value);
                 }
                 DrawText(weightText, screenWidth/2, 60, 20, my_grey);
-                if (GuiTextBox((Rectangle){ screenWidth/8.87, screenHeight /4.03 , screenWidth/7.71, screenHeight/17.26 }, dataPointsStr_screen_two, MAX_INPUT_CHARS, true))
+                DrawText("Input x", screenWidth/8.5, screenHeight /5, screenWidth/70, my_grey);
+                if (GuiTextBox((Rectangle){ screenWidth/8.87, screenHeight /4.03 , screenWidth/7.71, screenHeight/17.26 }, inputXStr, MAX_INPUT_CHARS, true))
                 {
-                    dataPoints_screen_two = atoi(dataPointsStr_screen_two);  // Convert string to int
+                    inputx = atof(inputXStr);  // Convert string to float
+                    if (!isnan(inputx)) {
+
+                        array* inputXArray = array_init(1, 1,inputx);
+                        array* y_pred = LinearRegression_predict(Model, inputXArray);
+                        predictedY = y_pred->values[0][0];
+                        array_destroy(y_pred);
+                        array_destroy(inputXArray);
+                    }
                 }
-                if (GuiButton((Rectangle) {screenWidth / 2.277, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Back"))
+                char y_pred_text[64];
+
+                if (predictedY > 1000000) {
+                    sprintf(y_pred_text, "y: %.2e", predictedY);
+                } else {
+                    sprintf(y_pred_text, "y: %.2lf", predictedY);
+                }
+                DrawText(y_pred_text, screenWidth/4, screenHeight /3.85, screenWidth/70, my_grey);
+
+                if (GuiButton((Rectangle) {back_button_x, back_button_y, buttom_screenW, buttom_screenH}, "Back")){
                     currentScreen = MAIN_MENU;
+                    isScatterPlotSaved = false;}
                 if (GuiButton((Rectangle) {screenWidth / 1.757, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Reset")){
                     reset(Model);
                 }
@@ -288,7 +377,87 @@ int main(){
                 if (GuiButton((Rectangle) {screenWidth / 1.2, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Resume")){
                     SCREEN_TWO_isPaused=false;
                 }
-                if (GuiButton((Rectangle) {screenWidth /8.58, screenHeight /10, buttom_screenW, buttom_screenH}, "Open File")){
+                if (GuiButton((Rectangle) {open_file_x, open_file_y, buttom_screenW, buttom_screenH}, "Open File")){
+                    fileDialogState.windowActive = true;
+                }
+                if(!fileDialogState.windowActive){
+                    GuiSetStyle(DEFAULT, TEXT_SIZE, (int)(2*screenWidth/100.0 ));
+                }
+                if (fileDialogState.windowActive)
+                {
+                    GuiSetStyle(DEFAULT, TEXT_SIZE, (int)(20 ));
+                    GuiWindowFileDialog(&fileDialogState);
+
+                    if (!fileDialogState.windowActive && fileDialogState.SelectFilePressed)
+                    {
+                        char filePath[1024];
+                        strcpy(filePath, TextFormat("%s" PATH_SEPERATOR "%s", fileDialogState.dirPathText, fileDialogState.fileNameText));
+//                        sprintf(filePath, "%s/%s", fileDialogState.dirPathText, fileDialogState.fileNameText);
+                        Log(LOG_INFO,"%s",filePath);
+                        array_destroy(Y);
+                        array_destroy(X);
+                        array_destroy(y);
+                        array_destroy(x);
+                        Y = read_file(filePath, ",");
+                        X= col_subset(Y,0,1);
+                        y =col_subset(Y,1,2);
+                        x = transpose(linspace(min_array(X), max_array(X), 1000));
+                        isScatterPlotSaved = false;
+                        reset(Model);
+                    }
+                }
+
+            }
+                break;
+            case SCREEN_THREE: {
+                DrawText("ANN approximation of x^2", screenWidth/2, 20, 20, my_grey);
+
+                fig_screen_two->axis_set = false;
+
+                DrawScatterPlot(x_ann_sample,x_ann_sample_2,fig_screen_two,3,my_red,150);
+
+                DrawLinePlot(x_ann, y_ann, fig_screen_two, 3, my_bleu, 150);
+                fig_screen_two->axis_set = true;
+
+                if(!SCREEN_THREE_isPaused){
+                    reseted_ann=false;
+                    loss=train(ann,x_ann,x_ann_2,3, learning_rate);
+                    write_to_csv("../loss.csv",loss,"a");
+                    array_destroy(loss);
+                    array_destroy(y_ann);
+                    y_ann = forward(ann,x_ann);
+                }
+                if (GuiButton((Rectangle) {screenWidth / 2.277, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Plot Loss")){
+                    // Read the loss values from "loss.csv" into an array
+                     loss_values = read_file("../loss.csv", ",");
+
+                    // Create a new Figure instance for the new window
+
+
+                    // Plot the loss values
+//                    DrawLinePlot(linspace(0, loss_values->shape[0], loss_values->shape[0]), loss_values, loss_figure, 3, my_red, 150);
+                    currentScreen = SCREEN_FOUR;
+                }
+
+                if (GuiButton((Rectangle) {back_button_x, back_button_y, buttom_screenW, buttom_screenH}, "Back")) {
+                    currentScreen = MAIN_MENU;
+                }
+                if (GuiButton((Rectangle) {screenWidth / 1.757, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Reset")){
+                    if(!reseted_ann){
+                        reset_ann(ann);
+                        reseted_ann=true;
+                        FILE *file_temp = fopen("../loss.csv", "w");
+                        fclose(file_temp);
+                    }
+
+                }
+                if (GuiButton((Rectangle) {screenWidth / 1.43, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Stop")){
+                    SCREEN_THREE_isPaused=true;
+                }
+                if (GuiButton((Rectangle) {screenWidth / 1.2, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Resume")){
+                    SCREEN_THREE_isPaused=false;
+                }
+                if (GuiButton((Rectangle) {open_file_x, open_file_y, buttom_screenW, buttom_screenH}, "Open File")){
                     fileDialogState.windowActive = true;
                 }
                 if(!fileDialogState.windowActive){
@@ -313,28 +482,49 @@ int main(){
                         X= col_subset(Y,0,1);
                         y =col_subset(Y,1,2);
                         x = transpose(linspace(min_array(X), max_array(X), 1000));
+                        isScatterPlotSaved = false;
                         reset(Model);
                     }
                 }
 
+
             }
                 break;
-            case SCREEN_THREE: {
-                DrawText("ANN approximation of x^2", screenWidth/2, 20, 20, my_grey);
-                if (GuiButton((Rectangle) {screenWidth / 2 - (screenWidth/20.58), screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Back")){
+            case SCREEN_FOUR: {
+                //set axis as not set
+                fig_screen_four->axis_set = false;
+
+                //resaves the plot
+                if (screenWidth != lastScreenWidth || screenHeight != lastScreenHeight) {
+                    lastScreenWidth = screenWidth;
+                    lastScreenHeight = screenHeight;
+                    isScatterPlotSaved = false;
+                }
+                if (!isScatterPlotSaved) {
+                    UnloadRenderTexture(target);
+                    target = LoadRenderTexture(screenWidth, screenHeight);
+                    BeginTextureMode(target);
+                    ClearBackground(RAYWHITE);
+                    info(loss_values);
+
+                    DrawLinePlot(transpose(linspace(0,loss_values->shape[0],loss_values->shape[0])), loss_values, fig_screen_four, 3, my_bleu, 230);
+                    EndTextureMode();
+                    scatterPlotTexture = target.texture;
+                    isScatterPlotSaved = true;
+                }
+                Rectangle sourceRect = { 0, 0, (float)scatterPlotTexture.width, (float)-scatterPlotTexture.height }; // Flip the height by using a negative value
+                Rectangle destRect = { 0, 0, (float)screenWidth, (float)screenHeight };
+                Vector2 origin = { 0, 0 };
+                // Draw the texture correctly oriented
+                DrawTexturePro(scatterPlotTexture, sourceRect, destRect, origin, 0.0f, WHITE);
+                fig_screen_four->axis_set = true;
+
+                DrawText("Loss Function", screenWidth/2, 20, 20, my_grey);
+                if (GuiButton((Rectangle) {back_button_x, back_button_y, buttom_screenW, buttom_screenH}, "Back")) {
                     currentScreen = MAIN_MENU;
+                    isScatterPlotSaved = false;
                 }
 
-                fig_screen_two->axis_set = false;
-//                train(ann,x_ann_sample,x_ann_2,10,0.0001);
-                DrawScatterPlot(x_ann_sample,x_ann_sample_2,fig_screen_two,3,my_red,150);
-
-                DrawLinePlot(x_ann, y_ann, fig_screen_two, 3, my_bleu, 150);
-                fig_screen_two->axis_set = true;
-                array_destroy(loss);
-                loss=train(ann,x_ann,x_ann_2,3, learning_rate);
-                array_destroy(y_ann);
-                y_ann = forward(ann,x_ann);
 
             }
                 break;

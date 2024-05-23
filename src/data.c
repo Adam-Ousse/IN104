@@ -65,13 +65,16 @@ array* read_file(const char* filename,const char* delimiter){
 
 
 
-void write_to_csv(const char* filename, array* data) {
-    FILE* file = fopen(filename, "w");
+void write_to_csv(const char* filename, array* data,char type[]) {
+
+    FILE* file = fopen(filename, type);
     if (file == NULL) {
         Log(LOG_ERROR, "Could not open file %s", filename);
         return;
     }
-
+    if(type[0]=='a'){
+        fseek(file, 0, SEEK_END);
+    }
     for (int i = 0; i < data->shape[0]; i++) {
         for (int j = 0; j < data->shape[1]; j++) {
             fprintf(file, "%f", data->values[i][j]);
