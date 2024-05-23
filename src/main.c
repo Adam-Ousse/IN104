@@ -55,6 +55,8 @@ typedef enum GameScreen {
 int main(){
     //    resets the Rayliblogfile
     FILE *file = fopen("../log/rayliblog.txt", "w");
+
+
     SetTraceLogLevel(LOG_INFO);
     SetTraceLogCallback(LogCallback);
     TraceLog(LOG_INFO, "Starting IN104");
@@ -62,31 +64,30 @@ int main(){
         main_test();
     }
     array* Y = subset(read_file("../data/x_6.9_3.2.txt",","),0,15);
-    info(Y);
-
     LinearRegression* Model=LinearRegression_init(1);
     array* X= col_subset(Y,0,1);
     array* y =col_subset(Y,1,2);
-    array* x = transpose(linspace(min_array(X), max_array(X), 1000));
-
+    array* x = transpose(linspace(min_array(X), max_array(X), 1000));//for plotting
+    //partially fitting the model.
     LinearRegression_fit(Model, X, y,10,0.0000000001 ,false,false);
+    //predicted values
     array* y_predictions = LinearRegression_predict(Model, x);
-    info(y_predictions);
+    //colors :
     Color my_red = CLITERAL(Color){ 243,102,102,255 };
     Color my_hover_red = CLITERAL(Color){ 252, 124, 143,255};
     Color my_grey = CLITERAL(Color){ 89,98,111,255};
     Color my_bleu = CLITERAL(Color){ 102, 175, 243,255};
     Color my_hover_bleu = CLITERAL(Color){ 118, 202, 245,255};
+    //Figures
     Figure* fig_screen_one =Figureinit();
     Figure* fig_screen_two =Figureinit();
     Figure* fig_screen_three =Figureinit();
 
-    if (file != NULL) {
-        fclose(file);
-    }
+
+    // Screen sizes:
     int screenWidth = 960;
     int screenHeight = 480;
-
+    //screen config :
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT );
     InitWindow(screenWidth, screenHeight, "IN104");
     Font globalFont = LoadFontEx("../assets/Roboto-Medium.ttf", (int)(5*screenWidth/100.0), 0, 0);
@@ -95,11 +96,17 @@ int main(){
     SetWindowIcon(icon);
     UnloadImage(icon); // Unload image data
     SetTargetFPS(20);
+    if (file != NULL) {
+        fclose(file);
+        Log(LOG_ERROR,"Failed to initialize raylog");
+    }
     GuiWindowFileDialogState fileDialogState = InitGuiWindowFileDialog("../");
     char dataPointsStr_screen_two[MAX_INPUT_CHARS + 1] = "\0";  // Input box text
-    char dataPointsStr_screen_one[MAX_INPUT_CHARS + 1] = "\0";  // Input box text
+    char dataPointsStr_screen_one[MAX_INPUT_CHARS + 1] = "\0";  // Input box text*
+    char dataPointsStr_screen_three[MAX_INPUT_CHARS + 1] = "\0";  // Input box text
     int dataPoints_screen_two = 0;  // Number of data points
     int dataPoints_screen_one = 0; // Number of data points screen one
+    int dataPoints_screen_three = 0;  // Number of data points screen three
     //ANN Model
     int layer_sizes[6]={1,12,12,32,12,1};
     //no activation function for the input
@@ -123,27 +130,17 @@ int main(){
 //    }
 
     array* x_ann = transpose(linspace(-10,10,500));
-    int samples = 200;
+    int samples = 100;
     array* x_ann_sample = sample(x_ann,samples);
 
     array* x_ann_2 = sum(elementwise_product(prodc(transform(prodc(x_ann,2),sin),10),transform(divisionc(x_ann,5),square)),prodc(transform(prodc(x_ann,6.0/10),cos),10));
 //    array* x_ann_2 = transform(sumc(transform(transform(transform(x_ann,exp),sin),relu),1),log);
     array* x_ann_sample_2 = sample(x_ann_2,samples);
 
-    double learning_rate =0.01;
+    double learning_rate =0.007;
     array* loss= train(ann,x_ann,x_ann_2,10, learning_rate);
     printf("finished trainig");
     array* y_ann = forward(ann,x_ann);
-//    for(int i=0;i<4;i++){
-//        layer* l = ann->layers[i];
-//
-//        printf("weights of layer %d\n",i+1);
-//        print(l->weights);
-//        printf("biases of layer %d\n",i+1);
-//        print(l->biases);
-//        printf("activation of layer %d\n",i+1);
-//        print(l->activation);
-//    }
 
     // Main game loop
     bool isRendered = false;
@@ -216,6 +213,7 @@ int main(){
                     currentScreen = MAIN_MENU;
                 fig_screen_two->axis_set = false;
                 DrawScatterPlot(X, y, fig_screen_two, 3, my_bleu, 150);
+                DrawText("Number of points", screenWidth/8.87, screenHeight /5, 10, my_grey);
                 if (GuiTextBox((Rectangle){ screenWidth/8.87, screenHeight /4.03 , screenWidth/7.71, screenHeight/17.26 }, dataPointsStr_screen_one, MAX_INPUT_CHARS, true))
                 {
                     dataPoints_screen_one = atoi(dataPointsStr_screen_one);  // Convert string to int
@@ -279,15 +277,15 @@ int main(){
                 {
                     dataPoints_screen_two = atoi(dataPointsStr_screen_two);  // Convert string to int
                 }
-                if (GuiButton((Rectangle) {screenWidth / 2.277, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Back"))
+                if (GuiButton((Rectangle) {screenWidth / 2.277, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Back"))
                     currentScreen = MAIN_MENU;
-                if (GuiButton((Rectangle) {screenWidth / 1.757, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Reset")){
+                if (GuiButton((Rectangle) {screenWidth / 1.757, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Reset")){
                     reset(Model);
                 }
-                if (GuiButton((Rectangle) {screenWidth / 1.43, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Stop")){
+                if (GuiButton((Rectangle) {screenWidth / 1.43, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Stop")){
                     SCREEN_TWO_isPaused=true;
                 }
-                if (GuiButton((Rectangle) {screenWidth / 1.2, screenHeight - (screenHeight/8.3), buttom_screenW, buttom_screenH}, "Resume")){
+                if (GuiButton((Rectangle) {screenWidth / 1.2, screenHeight - (screenHeight/6.0), buttom_screenW, buttom_screenH}, "Resume")){
                     SCREEN_TWO_isPaused=false;
                 }
                 if (GuiButton((Rectangle) {screenWidth /8.58, screenHeight /10, buttom_screenW, buttom_screenH}, "Open File")){
