@@ -1,0 +1,56 @@
+[
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\ANN.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\ANN.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/ANN.c",
+  "output": "CMakeFiles/main.dir/src/ANN.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\LinearRegression.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\LinearRegression.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/LinearRegression.c",
+  "output": "CMakeFiles/main.dir/src/LinearRegression.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\array.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\array.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/array.c",
+  "output": "CMakeFiles/main.dir/src/array.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\array_test.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\array_test.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/array_test.c",
+  "output": "CMakeFiles/main.dir/src/array_test.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\data.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\data.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/data.c",
+  "output": "CMakeFiles/main.dir/src/data.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\main.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\main.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/main.c",
+  "output": "CMakeFiles/main.dir/src/main.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\mathextra.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\mathextra.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/mathextra.c",
+  "output": "CMakeFiles/main.dir/src/mathextra.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\metrics.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\metrics.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/metrics.c",
+  "output": "CMakeFiles/main.dir/src/metrics.c.obj"
+},
+{
+  "directory": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/build",
+  "command": "C:\\mingw64\\bin\\clang.exe  @CMakeFiles/main.dir/includes_C.rsp -g -std=gnu11 -o CMakeFiles\\main.dir\\src\\plot.c.obj -c C:\\Users\\adamg\\OneDrive\\Documents\\GitHub\\IN104\\src\\plot.c",
+  "file": "C:/Users/adamg/OneDrive/Documents/GitHub/IN104/src/plot.c",
+  "output": "CMakeFiles/main.dir/src/plot.c.obj"
+}
+]

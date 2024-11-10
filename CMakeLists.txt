@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(IN104)
-
+include(CTest)
 set(CMAKE_C_STANDARD 11)
 
 include_directories(include)
@@ -22,3 +22,4 @@ if(WIN32)
 else()
     target_link_libraries(main raylib)
 endif()
+

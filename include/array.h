@@ -162,7 +162,7 @@ double max_array(array* X);
  */
 void min_max_normalize(array* X, double* coef);
 void min_max_unnormalize(array* X, double* coef);
-void* mean_normalize(array* X,double* coef);
+void mean_normalize(array* X,double* coef);
 void min_max_unnormalize(array* X, double* coef);
 /**
  * Calcule la moyenne de tous les éléments de A

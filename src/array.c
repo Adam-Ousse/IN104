@@ -316,7 +316,7 @@ double max_array(array* X){
     return result;
 }
 
-void* mean_normalize(array* X,double* coef){
+void mean_normalize(array* X,double* coef){
 //    double minn = min_array(X);
 //    double maxx = max_array(X);
 //    double meann = mean(X);
@@ -331,8 +331,7 @@ void* mean_normalize(array* X,double* coef){
             X->values[i][j] /= (coef[2]-coef[1]);
         }
     }
-
-}
+}   
 void min_max_normalize(array* X, double* coef){
 //    if(make_new_coef){
 //        double minn = min_array(X);

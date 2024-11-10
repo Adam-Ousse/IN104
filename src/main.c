@@ -117,10 +117,10 @@ int main(){
     int dataPoints_screen_one = 100000; // Number of data points screen one
     int dataPoints_screen_three = 0;  // Number of data points screen three
     //ANN Model
-    int layer_sizes[6]={1,12,12,32,12,1};
+    int layer_sizes[4]={1,64,64,1};
     //no activation function for the input
-    ACTIVATION_FUNCTION activation_functions[5]={RELU,RELU,SIGMOID,RELU,IDENTITY};
-    ANN* ann = ANN_init(6,layer_sizes,activation_functions);
+    ACTIVATION_FUNCTION activation_functions[3]={SIGMOID,SIGMOID,IDENTITY};
+    ANN* ann = ANN_init(4,layer_sizes,activation_functions);
 //    for(int i=0;i<4;i++){
 //
 //        char weight_file[50];
