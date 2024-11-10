@@ -13,20 +13,20 @@ Ce projet vise à développer une bibliothèque d'intelligence artificielle en l
 ## Objectifs du Projet
 
 L'objectif principal est de fournir une bibliothèque d'IA complète et fonctionnelle en C, offrant une variété de fonctionnalités et de modèles pour concevoir des applications d'IA. Une interface utilisateur conviviale a été développée pour faciliter l'intégration de la bibliothèque dans des projets existants.
-![Main Screen](img\436456597_8315646655118658_4120987165860465676_n.mp4)
+![Main Screen](img/436456597_8315646655118658_4120987165860465676_n.mp4)
 
 ## Fonctionnalités
 
 - **Régression Linéaire** : Implémentation d'un modèle de régression linéaire avec des fonctions pour l'initialisation, l'entraînement et la prédiction.
-  ![Regression linéaire](img\Untitled.png)
+  ![Regression linéaire](img/Untitled.png)
 - **Réseaux de Neurones Artificiels (ANN)** : Implémentation d'un modèle ANN avec des fonctions similaires.
-  ![ANN](img\func.png)
+  ![ANN](img/func.png)
 - **Visualisation des Données** : Interface graphique pour visualiser les données et les performances des modèles.
 
-  ![visualisation](img\plottt.png)
+  ![visualisation](img/plottt.png)
 
 - **Optimisation des Performances** : Utilisation de techniques comme la descente de gradient stochastique pour améliorer l'efficacité de l'entraînement.
-  ![loss funciton](img\loss.png)
+  ![loss funciton](img/loss.png)
 
 ## Prérequis
 
