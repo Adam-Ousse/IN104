@@ -13,7 +13,9 @@ Ce projet vise à développer une bibliothèque d'intelligence artificielle en l
 ## Objectifs du Projet
 
 L'objectif principal est de fournir une bibliothèque d'IA complète et fonctionnelle en C, offrant une variété de fonctionnalités et de modèles pour concevoir des applications d'IA. Une interface utilisateur conviviale a été développée pour faciliter l'intégration de la bibliothèque dans des projets existants.
-![Main Screen](img/436456597_8315646655118658_4120987165860465676_n.mp4)
+
+https://github-production-user-asset-6210df.s3.amazonaws.com/122156817/384650073-90d1d745-c255-4a1b-9c64-4a5f52811d43.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20241110%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241110T001918Z&X-Amz-Expires=300&X-Amz-Signature=d35f985ecd8ba682d38c2ab980dca3a3b72e23ef2766b1cfedad2ba471a4f36c&X-Amz-SignedHeaders=host
+
 
 ## Fonctionnalités
 
